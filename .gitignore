@@ -4,6 +4,3 @@
 /.idea/libraries
 .DS_Store
 /build
-*.class
-*.apk
-*.ap_
