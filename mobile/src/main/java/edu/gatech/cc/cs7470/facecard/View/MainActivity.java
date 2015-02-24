@@ -71,13 +71,18 @@ public class MainActivity extends ActionBarActivity
     public void onSectionAttached(int number) {
         switch (number) {
             case 1:
-                mTitle = getString(R.string.title_section1);
+                mTitle = getString(R.string.profile);
                 break;
             case 2:
-                mTitle = getString(R.string.title_section2);
+                mTitle = getString(R.string.friends);
                 break;
             case 3:
-                mTitle = getString(R.string.title_section3);
+                //logout
+                SharedPreferences prefs = getSharedPreferences(Constants.PACKAGE_NAME, Context.MODE_PRIVATE);
+                prefs.edit().remove(Constants.SHARED_PREFERENCES_ACCOUNT).commit();
+                finish();
+                Intent myIntent = new Intent(getApplicationContext(), LoginActivity.class);
+                startActivity(myIntent);
                 break;
         }
     }
