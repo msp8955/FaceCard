@@ -1,5 +1,4 @@
 package edu.gatech.cc.cs7470.facecard;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.view.Menu;
