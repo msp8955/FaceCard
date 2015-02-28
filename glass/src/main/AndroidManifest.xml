@@ -22,7 +22,12 @@
 
         <activity
             android:name="edu.gatech.cc.cs7470.facecard.LiveCardMenuActivity"
-            android:theme="@style/MenuTheme" />
+            android:theme="@style/MenuTheme">
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+        </activity>
     </application>
 
 </manifest>
