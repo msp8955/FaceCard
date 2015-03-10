@@ -1,4 +1,4 @@
-package edu.gatech.cc.cs7470.facecard.View;
+package edu.gatech.cc.cs7470.facecard.View.activities;
 
 import android.app.Activity;
 import android.app.AlertDialog;

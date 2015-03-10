@@ -1,4 +1,4 @@
-package edu.gatech.cc.cs7470.facecard.View;
+package edu.gatech.cc.cs7470.facecard.View.activities;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -28,6 +28,8 @@ import java.io.InputStream;
 
 import edu.gatech.cc.cs7470.facecard.Constants;
 import edu.gatech.cc.cs7470.facecard.R;
+import edu.gatech.cc.cs7470.facecard.View.fragments.NavigationDrawerFragment;
+import edu.gatech.cc.cs7470.facecard.View.uihelpers.RoundImageHelper;
 
 public class MainActivity extends BaseActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {

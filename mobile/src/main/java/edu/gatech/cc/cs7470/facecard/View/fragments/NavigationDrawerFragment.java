@@ -1,4 +1,4 @@
-package edu.gatech.cc.cs7470.facecard.View;
+package edu.gatech.cc.cs7470.facecard.View.fragments;
 
 import android.support.v7.app.ActionBarActivity;
 import android.app.Activity;

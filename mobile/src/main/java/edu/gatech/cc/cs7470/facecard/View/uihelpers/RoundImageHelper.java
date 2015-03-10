@@ -1,4 +1,4 @@
-package edu.gatech.cc.cs7470.facecard.View;
+package edu.gatech.cc.cs7470.facecard.View.uihelpers;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;

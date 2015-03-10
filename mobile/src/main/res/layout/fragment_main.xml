@@ -55,187 +55,177 @@
 
     </LinearLayout>
 
-    <ScrollView
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Description"
+            android:layout_marginLeft="20dp"
+            android:id="@+id/identity1"
+            android:textSize="15dp"
+            android:layout_marginTop="10dp"
+            android:layout_gravity="left" />
+        <TextView
+            android:id="@+id/profile_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Latest Status"
+            android:layout_marginLeft="20dp"
+            android:textSize="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_gravity="left" />
+
+        <View
+            android:layout_marginTop="20dp"
+            android:layout_width="fill_parent"
+            android:layout_height="1dip"
+            android:background="#000000" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Contact"
+            android:textStyle="bold"
+            android:layout_marginLeft="20dp"
+            android:textSize="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_gravity="left" />
+        <TextView
+            android:id="@+id/profile_telephone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1234567890"
+            android:layout_marginLeft="20dp"
+            android:textSize="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_gravity="left" />
+        <TextView
+            android:id="@+id/profile_email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="example@email.com"
+            android:layout_marginLeft="20dp"
+            android:textSize="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_gravity="left" />
+        <TextView
+            android:id="@+id/profile_website"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="example.com"
+            android:layout_marginLeft="20dp"
+            android:textSize="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_gravity="left" />
+
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp">
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="20dp">
 
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="fill_parent"
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="0.1"
+                android:id="@+id/image_google_icon"
+                android:src="@drawable/google"/>
+            <TextView
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Description"
-                    android:layout_marginLeft="20dp"
-                    android:id="@+id/identity1"
-                    android:textSize="15dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_gravity="left" />
-                <TextView
-                    android:id="@+id/profile_status"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Latest Status"
-                    android:layout_marginLeft="20dp"
-                    android:textSize="10dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_gravity="left" />
-
-                <View
-                    android:layout_marginTop="20dp"
-                    android:layout_width="fill_parent"
-                    android:layout_height="1dip"
-                    android:background="#000000" />
-
-            </LinearLayout>
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="fill_parent"
+                android:layout_weight="0.8"
+                android:layout_gravity="center_vertical"
+                android:id="@+id/google_link"
+                android:text="www.google.com"
+                android:layout_marginLeft="10dp"/>
+            <CheckBox
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Contact"
-                    android:textStyle="bold"
-                    android:layout_marginLeft="20dp"
-                    android:textSize="20dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_gravity="left" />
-                <TextView
-                    android:id="@+id/profile_telephone"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="1234567890"
-                    android:layout_marginLeft="20dp"
-                    android:textSize="10dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_gravity="left" />
-                <TextView
-                    android:id="@+id/profile_email"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="example@email.com"
-                    android:layout_marginLeft="20dp"
-                    android:textSize="10dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_gravity="left" />
-                <TextView
-                    android:id="@+id/profile_website"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="example.com"
-                    android:layout_marginLeft="20dp"
-                    android:textSize="10dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_gravity="left" />
-
-
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp">
-
-                <LinearLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="20dp">
-
-                    <ImageView
-                        android:layout_width="0dp"
-                        android:layout_height="40dp"
-                        android:layout_weight="0.1"
-                        android:id="@+id/image_google_icon"
-                        android:src="@drawable/google"/>
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.8"
-                        android:layout_gravity="center_vertical"
-                        android:id="@+id/google_link"
-                        android:text="www.google.com"
-                        android:layout_marginLeft="10dp"/>
-                    <CheckBox
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.1"
-                        android:id="@+id/checkbox1"/>
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="10dp">
-
-                    <ImageView
-                        android:layout_width="0dp"
-                        android:layout_height="40dp"
-                        android:layout_weight="0.1"
-                        android:id="@+id/facebook_icon"
-                        android:src="@drawable/facebook"/>
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.8"
-                        android:layout_gravity="center_vertical"
-                        android:id="@+id/facebook_link"
-                        android:text="www.facebook.com"
-                        android:layout_marginLeft="10dp"/>
-                    <CheckBox
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.1"
-                        android:id="@+id/checkbox2"/>
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="10dp">
-
-                    <ImageView
-                        android:layout_width="0dp"
-                        android:layout_height="40dp"
-                        android:layout_weight="0.1"
-                        android:id="@+id/linkedin"
-                        android:src="@drawable/linkedin"/>
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.8"
-                        android:layout_gravity="center_vertical"
-                        android:id="@+id/linkedin_link"
-                        android:text="www.linkedin.com"
-                        android:layout_marginLeft="10dp"/>
-                    <CheckBox
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.1"
-                        android:id="@+id/checkbox3"/>
-                </LinearLayout>
-
-
-            </LinearLayout>
+                android:layout_weight="0.1"
+                android:id="@+id/checkbox1"/>
         </LinearLayout>
-    </ScrollView>
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp">
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="0.1"
+                android:id="@+id/facebook_icon"
+                android:src="@drawable/facebook"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.8"
+                android:layout_gravity="center_vertical"
+                android:id="@+id/facebook_link"
+                android:text="www.facebook.com"
+                android:layout_marginLeft="10dp"/>
+            <CheckBox
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.1"
+                android:id="@+id/checkbox2"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp">
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="0.1"
+                android:id="@+id/linkedin"
+                android:src="@drawable/linkedin"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.8"
+                android:layout_gravity="center_vertical"
+                android:id="@+id/linkedin_link"
+                android:text="www.linkedin.com"
+                android:layout_marginLeft="10dp"/>
+            <CheckBox
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.1"
+                android:id="@+id/checkbox3"/>
+        </LinearLayout>
+
+
+    </LinearLayout>
 
 </LinearLayout>

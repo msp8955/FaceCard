@@ -1,57 +1,114 @@
 package edu.gatech.cc.cs7470.facecard.Model;
 
+import com.google.android.gms.plus.model.people.Person;
+
 /**
  * Created by miseonpark on 3/3/15.
  */
 public class Profile {
 
-    private String username;
-    private String bluetoothId;
+    private Bluetooth bluetoothInfo;
     private String name;
-    private String note;
-    private String description;
+    private String tagline;
     private String organization;
-    //image
+    private String profile_picture_url;
+    private String profile_cover_url;
 
-    public Profile(String username, String bluetoothId, String name, String note){
-        this.username = username;
-        this.bluetoothId = bluetoothId;
-        this.name = name;
-        this.note = note;
+    private String google_link;
+    private String facebook_link;
+    private String linkedIn_link;
+
+    public Profile(Person person){
+
+//        bluetoothInfo = new Bluetooth();
+        name = person.getDisplayName();
+        tagline = person.getTagline();
+        organization = person.getOrganizations().get(0).getName();
+        profile_picture_url = person.getImage().getUrl();
+        profile_cover_url = "";
+        if(person.hasCover()){
+            if(person.getCover().hasCoverPhoto()) {
+                profile_cover_url = person.getCover().getCoverPhoto().getUrl();
+            }
+        }
+
+        google_link = person.getUrl();
+
+        //TODO
+        facebook_link = "";
+        linkedIn_link = "";
     }
 
-    public Profile(String name, String description, String organization){
-        this.name = name;
-        this.description = description;
-        this.organization = organization;
+    public Bluetooth getBluetoothInfo() {
+        return bluetoothInfo;
     }
 
-    public String getUsername(){
-        return username;
+    public void setBluetoothInfo(Bluetooth bluetoothInfo) {
+        this.bluetoothInfo = bluetoothInfo;
     }
-    public String getBluetoothId(){
-        return bluetoothId;
-    }
-    public String getName(){
+
+    public String getName() {
         return name;
     }
-    public String getNote(){
-        return note;
+
+    public void setName(String name) {
+        this.name = name;
     }
-    public void setNote(String note){
-        this.note = note;
+
+    public String getTagline() {
+        return tagline;
     }
-    public String getDescription(){
-        return description;
+
+    public void setTagline(String tagline) {
+        this.tagline = tagline;
     }
-    public void setDescription(String description){
-        this.description = description;
-    }
-    public String getOrganization(){
+
+    public String getOrganization() {
         return organization;
     }
-    public void setOrganization(String organization){
+
+    public void setOrganization(String organization) {
         this.organization = organization;
+    }
+
+    public String getProfile_picture_url() {
+        return profile_picture_url;
+    }
+
+    public void setProfile_picture_url(String profile_picture_url) {
+        this.profile_picture_url = profile_picture_url;
+    }
+
+    public String getProfile_cover_url() {
+        return profile_cover_url;
+    }
+
+    public void setProfile_cover_url(String profile_cover_url) {
+        this.profile_cover_url = profile_cover_url;
+    }
+
+    public String getGoogle_link() {
+        return google_link;
+    }
+
+    public void setGoogle_link(String google_link) {
+        this.google_link = google_link;
+    }
+
+    public String getFacebook_link() {
+        return facebook_link;
+    }
+
+    public void setFacebook_link(String facebook_link) {
+        this.facebook_link = facebook_link;
+    }
+
+    public String getLinkedIn_link() {
+        return linkedIn_link;
+    }
+
+    public void setLinkedIn_link(String linkedIn_link) {
+        this.linkedIn_link = linkedIn_link;
     }
 
 }
