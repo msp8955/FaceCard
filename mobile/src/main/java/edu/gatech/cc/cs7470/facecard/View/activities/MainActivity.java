@@ -24,9 +24,12 @@ import android.widget.TextView;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
 
+import org.w3c.dom.Text;
+
 import java.io.InputStream;
 
 import edu.gatech.cc.cs7470.facecard.Constants;
+import edu.gatech.cc.cs7470.facecard.Model.Profile;
 import edu.gatech.cc.cs7470.facecard.R;
 import edu.gatech.cc.cs7470.facecard.View.fragments.NavigationDrawerFragment;
 import edu.gatech.cc.cs7470.facecard.View.uihelpers.RoundImageHelper;
@@ -107,7 +110,6 @@ public class MainActivity extends BaseActivity
                 }else{
                     //Throw Error Message
                 }
-
                 break;
         }
     }
@@ -160,6 +162,9 @@ public class MainActivity extends BaseActivity
         private TextView tv_profile_name;
         private TextView tv_profile_tagline;
         private TextView tv_profile_organization;
+        private TextView tv_phone;
+        private TextView tv_email;
+        private TextView tv_website;
         private ImageView iv_profile_picture;
         private LinearLayout ll_profile_background;
 
@@ -188,6 +193,11 @@ public class MainActivity extends BaseActivity
             tv_profile_name = (TextView)rootView.findViewById(R.id.profile_name);
             tv_profile_tagline = (TextView)rootView.findViewById(R.id.profile_tagline);
             tv_profile_organization = (TextView)rootView.findViewById(R.id.profile_organization);
+
+//            tv_phone = (TextView)rootView.findViewById(R.id.profile_phone);
+            tv_email = (TextView)rootView.findViewById(R.id.profile_email);
+            tv_website = (TextView)rootView.findViewById(R.id.profile_website);
+
             iv_profile_picture = (ImageView)rootView.findViewById(R.id.profile_picture);
             ll_profile_background = (LinearLayout)rootView.findViewById(R.id.profile_cover);
 
@@ -200,43 +210,33 @@ public class MainActivity extends BaseActivity
         private void getProfileInfo(){
             try {
                 if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
-                    Person person = Plus.PeopleApi
-                            .getCurrentPerson(mGoogleApiClient);
-                    String profile_name = person.getDisplayName();
-                    String profile_tagline = person.getTagline();
-                    String profile_organization = person.getOrganizations().get(0).getName();
-                    String profile_picture_url = person.getImage().getUrl();
-                    String profile_google_plus_url = person.getUrl();
-                    String profile_cover_url = "";
-                    if(person.hasCover()){
-                        if(person.getCover().hasCoverPhoto()) {
-                            profile_cover_url = person.getCover().getCoverPhoto().getUrl();
-                        }
-                    }
+                    Profile profile = new Profile(Plus.PeopleApi.getCurrentPerson(mGoogleApiClient),
+                            Plus.AccountApi.getAccountName(mGoogleApiClient));
 
-                    String profile_email = Plus.AccountApi.getAccountName(mGoogleApiClient);
+                    String profile_picture_url = profile.getProfile_picture_url();
+                    String profile_cover_url = profile.getProfile_cover_url();
 
-                    Log.e(TAG, "Name: " + profile_name + ", plusProfile: "
-                            + profile_google_plus_url + ", email: " + profile_email
-                            + ", Image: " + profile_picture_url
-                            + ", Cover: " + profile_cover_url
-                            + ", Tagline: " + person.getTagline());
+                    tv_profile_name.setText(profile.getName());
+                    tv_profile_tagline.setText(profile.getTagline());
+                    tv_profile_organization.setText(profile.getOrganization());
 
-                    tv_profile_name.setText(profile_name);
-                    tv_profile_tagline.setText(profile_tagline);
-                    tv_profile_organization.setText(profile_organization);
+                    //Contacts
+//                    tv_phone.setText(profile.getPhone());
+                    tv_email.setText(profile.getEmail());
+//                    tv_website.setText(profile.getWebsite());
 
-                    //links
-                    tv_google_link.setText(profile_google_plus_url);
+                    //Links
+                    tv_google_link.setText(profile.getGoogle_link());
 
                     // by default the profile url gives 50x50 px image only
                     // we can replace the value with whatever dimension we want by
                     // replacing sz=X
-                    profile_picture_url = profile_picture_url.substring(0,
-                            profile_picture_url.length() - 2)
-                            + Constants.PROFILE_PIC_SIZE;
-
-                    new LoadProfileImage(iv_profile_picture).execute(profile_picture_url);
+                    if(profile_picture_url.length()>0) {
+                        profile_picture_url = profile_picture_url.substring(0,
+                                profile_picture_url.length() - 2)
+                                + Constants.PROFILE_PIC_SIZE;
+                        new LoadProfileImage(iv_profile_picture).execute(profile_picture_url);
+                    }
                     if(profile_cover_url.length()>0) {
                         new LoadProfileImage(ll_profile_background).execute(profile_cover_url);
                     }

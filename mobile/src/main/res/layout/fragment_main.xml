@@ -105,15 +105,15 @@
             android:textSize="20dp"
             android:layout_marginTop="20dp"
             android:layout_gravity="left" />
-        <TextView
-            android:id="@+id/profile_telephone"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="1234567890"
-            android:layout_marginLeft="20dp"
-            android:textSize="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_gravity="left" />
+        <!--<TextView-->
+            <!--android:id="@+id/profile_phone"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="1234567890"-->
+            <!--android:layout_marginLeft="20dp"-->
+            <!--android:textSize="10dp"-->
+            <!--android:layout_marginTop="10dp"-->
+            <!--android:layout_gravity="left" />-->
         <TextView
             android:id="@+id/profile_email"
             android:layout_width="wrap_content"
@@ -150,7 +150,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="20dp">
+            android:layout_marginTop="10dp">
 
             <ImageView
                 android:layout_width="0dp"

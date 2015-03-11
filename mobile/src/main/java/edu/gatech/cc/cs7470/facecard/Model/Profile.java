@@ -14,17 +14,26 @@ public class Profile {
     private String profile_picture_url;
     private String profile_cover_url;
 
+    private String phone;
+    private String email;
+    private String website;
+
     private String google_link;
     private String facebook_link;
     private String linkedIn_link;
 
-    public Profile(Person person){
+    public Profile(Person person, String email){
 
 //        bluetoothInfo = new Bluetooth();
         name = person.getDisplayName();
         tagline = person.getTagline();
         organization = person.getOrganizations().get(0).getName();
-        profile_picture_url = person.getImage().getUrl();
+        profile_picture_url = "";
+        if(person.hasImage()){
+            if(person.getImage().hasUrl()){
+                profile_picture_url = person.getImage().getUrl();
+            }
+        }
         profile_cover_url = "";
         if(person.hasCover()){
             if(person.getCover().hasCoverPhoto()) {
@@ -32,8 +41,10 @@ public class Profile {
             }
         }
 
-        google_link = person.getUrl();
 
+        this.email = email;
+
+        google_link = person.getUrl();
         //TODO
         facebook_link = "";
         linkedIn_link = "";
@@ -85,6 +96,30 @@ public class Profile {
 
     public void setProfile_cover_url(String profile_cover_url) {
         this.profile_cover_url = profile_cover_url;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getWebsite() {
+        return website;
+    }
+
+    public void setWebsite(String website) {
+        this.website = website;
     }
 
     public String getGoogle_link() {
