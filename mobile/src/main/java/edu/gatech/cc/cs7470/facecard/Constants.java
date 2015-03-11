@@ -13,4 +13,7 @@ public class Constants {
 
     //shared preferences labels
     public static final String SHARED_PREFERENCES_ACCOUNT = "account"; //Google+ account
+
+    //TODO: change url
+    public static final String URL = "http://www.urlneedstobechanged.com/example.php";
 }
