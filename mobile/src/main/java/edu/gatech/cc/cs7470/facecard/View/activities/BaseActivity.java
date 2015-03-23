@@ -57,6 +57,10 @@ public abstract class BaseActivity extends ActionBarActivity implements
                 .build();
     }
 
+    public GoogleApiClient getGoogleApiClient(){
+        return this.mGoogleApiClient;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
