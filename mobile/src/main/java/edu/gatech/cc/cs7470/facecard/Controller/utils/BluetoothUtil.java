@@ -13,6 +13,10 @@ public class BluetoothUtil {
 
     private static final String TAG = "FaceCard BluetoothUtil";
 
+    /**
+     * getBluetoothId
+     * @return Bluetooth UUID for the device
+     */
     public String getBluetoothId(){
 
         try {

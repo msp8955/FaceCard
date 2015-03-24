@@ -50,18 +50,18 @@ public class FriendListFragment extends Fragment implements ResultCallback<Peopl
     }
 
     private void populateFriendInfo(){
-        try {
-            if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
-                Plus.PeopleApi.loadVisible(mGoogleApiClient, null)
-                        .setResultCallback(this);
-
-            } else {
-                    Toast.makeText(activity,
-                            "Person information is null", Toast.LENGTH_LONG).show();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        try {
+//            if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
+//                Plus.PeopleApi.loadVisible(mGoogleApiClient, null)
+//                        .setResultCallback(this);
+//
+//            } else {
+//                    Toast.makeText(activity,
+//                            "Person information is null", Toast.LENGTH_LONG).show();
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
     }
 
     @Override

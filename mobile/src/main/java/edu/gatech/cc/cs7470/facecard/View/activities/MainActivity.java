@@ -1,7 +1,9 @@
 package edu.gatech.cc.cs7470.facecard.View.activities;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.v4.app.FragmentTransaction;
+import android.content.SharedPreferences;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
@@ -10,6 +12,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v4.widget.DrawerLayout;
 
+import com.google.android.gms.plus.Plus;
+import com.google.android.gms.plus.model.people.Person;
+
+import edu.gatech.cc.cs7470.facecard.Constants;
+import edu.gatech.cc.cs7470.facecard.Controller.tasks.RegisterBluetoothTask;
+import edu.gatech.cc.cs7470.facecard.Controller.utils.BluetoothUtil;
+import edu.gatech.cc.cs7470.facecard.Model.Bluetooth;
+import edu.gatech.cc.cs7470.facecard.Model.Profile;
 import edu.gatech.cc.cs7470.facecard.R;
 import edu.gatech.cc.cs7470.facecard.View.fragments.FriendListFragment;
 import edu.gatech.cc.cs7470.facecard.View.fragments.MainFragment;
@@ -18,19 +28,21 @@ import edu.gatech.cc.cs7470.facecard.View.fragments.NavigationDrawerFragment;
 public class MainActivity extends BaseActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
-    private static final String TAG = "FaceCard LoginActivity";
+    private static final String TAG = "FaceCard MainActivity";
 
     /**
      * Fragment
      */
     private NavigationDrawerFragment mNavigationDrawerFragment;
-    private FragmentManager fm;
-    private FragmentTransaction ft;
 
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
     private CharSequence mTitle;
+
+    private int currentNavigationFragment;
+
+    private Profile profile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,14 +51,23 @@ public class MainActivity extends BaseActivity
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
+        currentNavigationFragment = 0;
+
+        if (mGoogleApiClient.isConnected() && Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
+            profile = new Profile(Plus.PeopleApi.getCurrentPerson(mGoogleApiClient),
+                    Plus.AccountApi.getAccountName(mGoogleApiClient));
+        }
+
+        //check for bluetooth registration
+        SharedPreferences prefs = getSharedPreferences(Constants.PACKAGE_NAME, MODE_PRIVATE);
+        if(!prefs.contains(Constants.SHARED_PREFERENCES_BLUETOOTH)){
+            registerBluetooth();
+        }
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, new MainFragment()).commit();
         }
-
-        fm = getSupportFragmentManager();
-        ft = fm.beginTransaction();
 
 //        tv_profile_description = (TextView)findViewById(R.id.profile_description);
 //        tv_profile_organization = (TextView)findViewById(R.id.profile_organization);
@@ -59,6 +80,7 @@ public class MainActivity extends BaseActivity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+        mNavigationDrawerFragment.setMenuVisibility(false);
 
         Log.d(TAG, "onCreate");
     }
@@ -75,32 +97,39 @@ public class MainActivity extends BaseActivity
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
+        Log.d(TAG, "navigation position " + position);
         FragmentManager fragmentManager = getSupportFragmentManager();
         switch(position){
+            case 0:
+                if(currentNavigationFragment!=position) {
+                    fragmentManager.beginTransaction()
+                            .replace(R.id.container, MainFragment.newInstance())
+                            .commit();
+                    currentNavigationFragment = position;
+                }
+                break;
             case 1:
-                fragmentManager.beginTransaction()
-                        .replace(R.id.container, MainFragment.newInstance())
-                        .commit();
+                if(currentNavigationFragment!=position) {
+                    fragmentManager.beginTransaction()
+                            .replace(R.id.container, FriendListFragment.newInstance())
+                            .commit();
+                    currentNavigationFragment = position;
+                }
                 break;
             case 2:
-                fragmentManager.beginTransaction()
-                        .replace(R.id.container, FriendListFragment.newInstance())
-                        .commit();
-                break;
+                if(currentNavigationFragment!=position) {
+                    fragmentManager.beginTransaction()
+                            .replace(R.id.container, MainFragment.newInstance())
+                            .commit();
+                    currentNavigationFragment = position;
+                }
             case 3:
-                fragmentManager.beginTransaction()
-                        .replace(R.id.container, MainFragment.newInstance())
-                        .commit();
-            case 4:
                 //logout
                 if(signOutFromGplus()){
                     onSignedOut();
                 }else{
                     //Throw Error Message
                 }
-//                fragmentManager.beginTransaction()
-//                        .replace(R.id.container, PlaceholderFragment.newInstance(position + 1, mGoogleApiClient))
-//                        .commit();
                 break;
             default:
                 break;
@@ -163,6 +192,57 @@ public class MainActivity extends BaseActivity
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public Profile getProfile(){
+        return this.profile;
+    }
+
+    private void registerBluetooth(){
+
+        final String uuid = (new BluetoothUtil()).getBluetoothId();
+        profile.setBluetoothInfo(new Bluetooth(uuid,profile.getEmail()));
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Bluetooth Registration");
+        builder.setMessage("You have to register your Bluetooth device to use the application.\n" + uuid);
+        //Yes
+        builder.setPositiveButton("Register", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                new RegisterBluetoothTask().execute(profile.getEmail(),
+                        profile.getBluetoothInfo().getBluetoothId(), profile.getName(),
+                        profile.getName(), profile.getTagline());
+
+                //save
+                SharedPreferences prefs = getSharedPreferences(Constants.PACKAGE_NAME, MODE_PRIVATE);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putString(Constants.SHARED_PREFERENCES_BLUETOOTH, uuid);
+                editor.commit();
+
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                finish();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy GoogleApiClient disconnected");
+        if (mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
+        }
     }
 
 }

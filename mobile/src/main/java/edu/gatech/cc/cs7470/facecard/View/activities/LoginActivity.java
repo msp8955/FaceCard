@@ -28,10 +28,14 @@ public class LoginActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        Log.d(TAG, "onCreate");
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
         activity = this;
+
         btnSignIn = (SignInButton) findViewById(R.id.sign_in_button);
         btnSignIn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -43,8 +47,6 @@ public class LoginActivity extends BaseActivity {
             mSignInProgress = savedInstanceState
                     .getInt(SAVED_PROGRESS, STATE_DEFAULT);
         }
-
-        Log.d(TAG, "onCreate");
     }
 
     @Override
@@ -55,6 +57,7 @@ public class LoginActivity extends BaseActivity {
             Log.d(TAG, currentUser.getDisplayName());
             saveAccountPreference(currentUser.getId());
             mSignInProgress = STATE_DEFAULT;
+            finish();
             Intent i = new Intent(activity, MainActivity.class);
             startActivity(i);
         }
@@ -95,6 +98,12 @@ public class LoginActivity extends BaseActivity {
                 }
                 break;
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy do nothing");
     }
 
 }

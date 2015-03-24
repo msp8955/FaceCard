@@ -35,17 +35,28 @@ public class RegisterBluetoothTask extends AsyncTask<String, String, String> {
 
         String accountId = params[0];
         String bluetoothId = params[1];
+        String firstName = params[2];
+        String lastName = params[3];
+        String tag = params[4];
 
         Log.d(TAG, "accountId: " + accountId + " bluetoothId: " + bluetoothId);
 
         HttpClient httpClient = new DefaultHttpClient();
-        HttpPost httpPost = new HttpPost(Constants.URL);
+        HttpPost httpPost = new HttpPost(Constants.REGISTER_ACCOUNT_URL);
 
-        BasicNameValuePair accountPair = new BasicNameValuePair("accountId", accountId);
-        BasicNameValuePair bluetoothPair = new BasicNameValuePair("bluetoothId", bluetoothId);
+        BasicNameValuePair accountPair = new BasicNameValuePair("google_account", accountId);
+        BasicNameValuePair passwordPair = new BasicNameValuePair("google_password", accountId);
+        BasicNameValuePair bluetoothPair = new BasicNameValuePair("bluetooth_id", bluetoothId);
+        BasicNameValuePair firstNamePair = new BasicNameValuePair("first_name", firstName);
+        BasicNameValuePair lastNamePair = new BasicNameValuePair("last_name", lastName);
+        BasicNameValuePair tagPair = new BasicNameValuePair("personal_tags", tag);
         List<NameValuePair> nameValuePairList = new ArrayList<>();
-        nameValuePairList.add(accountPair);
         nameValuePairList.add(bluetoothPair);
+        nameValuePairList.add(accountPair);
+        nameValuePairList.add(passwordPair);
+        nameValuePairList.add(firstNamePair);
+        nameValuePairList.add(lastNamePair);
+        nameValuePairList.add(tagPair);
 
         try {
             UrlEncodedFormEntity urlEncodedFormEntity = new UrlEncodedFormEntity(nameValuePairList);
@@ -64,6 +75,8 @@ public class RegisterBluetoothTask extends AsyncTask<String, String, String> {
                 while((bufferedStrChunk = bufferedReader.readLine()) != null){
                     stringBuilder.append(bufferedStrChunk);
                 }
+
+                Log.d(TAG, stringBuilder.toString());
 
                 return stringBuilder.toString();
 

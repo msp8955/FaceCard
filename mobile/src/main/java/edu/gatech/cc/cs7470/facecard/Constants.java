@@ -13,7 +13,8 @@ public class Constants {
 
     //shared preferences labels
     public static final String SHARED_PREFERENCES_ACCOUNT = "account"; //Google+ account
+    public static final String SHARED_PREFERENCES_BLUETOOTH = "bluetooth"; //Bluetooth
 
     //TODO: change url
-    public static final String URL = "http://www.urlneedstobechanged.com/example.php";
+    public static final String REGISTER_ACCOUNT_URL = "http://ec2-52-11-241-214.us-west-2.compute.amazonaws.com/facecard/setAccount.php";
 }

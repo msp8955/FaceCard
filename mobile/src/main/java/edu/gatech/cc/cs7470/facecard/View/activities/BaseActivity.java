@@ -67,6 +67,9 @@ public abstract class BaseActivity extends ActionBarActivity implements
         if(mGoogleApiClient==null) {
             mGoogleApiClient = buildGoogleApiClient();
         }
+        if(!mGoogleApiClient.isConnected()){
+            mGoogleApiClient.connect();
+        }
     }
 
     /* onConnected is called when our Activity successfully connects to Google
@@ -125,15 +128,33 @@ public abstract class BaseActivity extends ActionBarActivity implements
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-
-        if (mGoogleApiClient.isConnected()) {
-            mGoogleApiClient.disconnect();
+    protected void onResume() {
+        Log.d(TAG, "onResume");
+        super.onResume();
+        if(!mGoogleApiClient.isConnected()){
+            Log.d(TAG, "onResume connect GoogleApiClient");
+            mGoogleApiClient.connect();
         }
     }
 
-    protected boolean signOutFromGplus() {
+    @Override
+    protected void onStop() {
+
+        Log.d(TAG, "onStop");
+        super.onStop();
+
+//        if (mGoogleApiClient.isConnected()) {
+//            mGoogleApiClient.disconnect();
+//        }
+    }
+
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        //do nothing
+    }
+
+    public boolean signOutFromGplus() {
         try {
             if (mGoogleApiClient.isConnected()) {
                 SharedPreferences prefs = getSharedPreferences(Constants.PACKAGE_NAME, Context.MODE_PRIVATE);
@@ -161,7 +182,8 @@ public abstract class BaseActivity extends ActionBarActivity implements
    * the user to consent to the permissions being requested by your app, a
    * setting to enable device networking, etc.
    */
-    protected boolean resolveSignInError() {
+    public boolean resolveSignInError() {
+        Log.d(TAG, "resolveSignInError");
         if (mSignInIntent != null) {
             // We have an intent which will allow our user to sign in or
             // resolve an error.  For example if the user needs to

@@ -4,6 +4,9 @@ package edu.gatech.cc.cs7470.facecard.View.fragments;
  * Created by miseonpark on 3/23/15.
  */
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -25,6 +28,7 @@ import com.google.android.gms.plus.Plus;
 import java.io.InputStream;
 
 import edu.gatech.cc.cs7470.facecard.Constants;
+import edu.gatech.cc.cs7470.facecard.Controller.utils.BluetoothUtil;
 import edu.gatech.cc.cs7470.facecard.Model.Profile;
 import edu.gatech.cc.cs7470.facecard.R;
 import edu.gatech.cc.cs7470.facecard.View.activities.MainActivity;
@@ -96,15 +100,18 @@ public class MainFragment extends Fragment {
 
         //links
         tv_google_link = (TextView)rootView.findViewById(R.id.google_link);
+
         populateProfileInfo();
+
         return rootView;
     }
 
+
+
     private void populateProfileInfo(){
         try {
-            if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
-                Profile profile = new Profile(Plus.PeopleApi.getCurrentPerson(mGoogleApiClient),
-                        Plus.AccountApi.getAccountName(mGoogleApiClient));
+            if (mGoogleApiClient.isConnected() && Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
+                Profile profile = activity.getProfile();
 
                 String profile_picture_url = profile.getProfile_picture_url();
                 String profile_cover_url = profile.getProfile_cover_url();
@@ -177,11 +184,13 @@ public class MainFragment extends Fragment {
         }
 
         protected void onPostExecute(Bitmap result) {
-            if(isCoverImage){
-                Drawable background = new BitmapDrawable(result);
-                coverImage.setBackground(background);
-            }else {
-                bmImage.setImageBitmap(roundImageHelper.getRoundedCornerBitmap(result, Constants.PROFILE_PIC_RADIUS));
+            if(result != null) {
+                if (isCoverImage) {
+                    Drawable background = new BitmapDrawable(result);
+                    coverImage.setBackground(background);
+                } else {
+                    bmImage.setImageBitmap(roundImageHelper.getRoundedCornerBitmap(result, Constants.PROFILE_PIC_RADIUS));
+                }
             }
         }
     }
