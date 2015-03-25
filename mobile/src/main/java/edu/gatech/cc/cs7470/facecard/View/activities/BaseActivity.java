@@ -1,4 +1,4 @@
-package edu.gatech.cc.cs7470.facecard.View;
+package edu.gatech.cc.cs7470.facecard.View.activities;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -10,89 +10,42 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-import android.view.View;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
-import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
-
 import com.google.android.gms.plus.Plus;
-
+import com.google.android.gms.plus.model.people.Person;
 
 import edu.gatech.cc.cs7470.facecard.Constants;
 import edu.gatech.cc.cs7470.facecard.R;
 
 /**
- * Created by miseonpark on 2/24/15.
+ * Created by miseonpark on 3/2/15.
  */
-public class LoginActivity extends Activity implements ConnectionCallbacks, OnConnectionFailedListener{
+public abstract class BaseActivity extends ActionBarActivity implements
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
-    private static final String TAG = "facecard-login";
+    private static final String TAG = "FaceCard BaseActivity";
 
-    private static final int STATE_DEFAULT = 0;
-    private static final int STATE_SIGN_IN = 1;
-    private static final int STATE_IN_PROGRESS = 2;
+    protected static final int STATE_DEFAULT = 0;
+    protected static final int STATE_SIGN_IN = 1;
+    protected static final int STATE_IN_PROGRESS = 2;
 
-    private static final int RC_SIGN_IN = 0;
+    protected static final String SAVED_PROGRESS = "sign_in_progress";
 
-    private static final int DIALOG_PLAY_SERVICES_ERROR = 0;
+    protected static final int RC_SIGN_IN = 0;
+    protected static final int DIALOG_PLAY_SERVICES_ERROR = 0;
+    protected static int mSignInProgress;
 
-    private static final String SAVED_PROGRESS = "sign_in_progress";
-
-    // GoogleApiClient wraps our service connection to Google Play services and
-    // provides access to the users sign in state and Google's APIs.
-    private GoogleApiClient mGoogleApiClient;
-
-    // We use mSignInProgress to track whether user has clicked sign in.
-    // mSignInProgress can be one of three values:
-    //
-    //       STATE_DEFAULT: The default state of the application before the user
-    //                      has clicked 'sign in', or after they have clicked
-    //                      'sign out'.  In this state we will not attempt to
-    //                      resolve sign in errors and so will display our
-    //                      Activity in a signed out state.
-    //       STATE_SIGN_IN: This state indicates that the user has clicked 'sign
-    //                      in', so resolve successive errors preventing sign in
-    //                      until the user has successfully authorized an account
-    //                      for our app.
-    //   STATE_IN_PROGRESS: This state indicates that we have started an intent to
-    //                      resolve an error, and so we should not start further
-    //                      intents until the current intent completes.
-    private int mSignInProgress;
-
-    // Used to store the PendingIntent most recently returned by Google Play
-    // services until the user clicks 'sign in'.
     private PendingIntent mSignInIntent;
-
-    // Used to store the error code most recently returned by Google Play services
-    // until the user clicks 'sign in'.
     private int mSignInError;
 
-    private Activity activity;
-    private SignInButton btnSignIn;
+    protected static GoogleApiClient mGoogleApiClient;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
-        activity = this;
-        btnSignIn = (SignInButton) findViewById(R.id.sign_in_button);
-        btnSignIn.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                resolveSignInError();
-                saveAccountPreference("test_id");
-                Intent i = new Intent(activity, MainActivity.class);
-                startActivity(i);
-            }
-        });
-        mGoogleApiClient = buildGoogleApiClient();
-    }
-
-    private GoogleApiClient buildGoogleApiClient() {
+    protected GoogleApiClient buildGoogleApiClient() {
         // When we build the GoogleApiClient we specify where connected and
         // connection failed callbacks should be returned, which Google APIs our
         // app uses and which OAuth 2.0 scopes our app requests.
@@ -104,6 +57,70 @@ public class LoginActivity extends Activity implements ConnectionCallbacks, OnCo
                 .build();
     }
 
+    public GoogleApiClient getGoogleApiClient(){
+        return this.mGoogleApiClient;
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if(mGoogleApiClient==null) {
+            mGoogleApiClient = buildGoogleApiClient();
+        }
+        if(!mGoogleApiClient.isConnected()){
+            mGoogleApiClient.connect();
+        }
+    }
+
+    /* onConnected is called when our Activity successfully connects to Google
+   * Play services.  onConnected indicates that an account was selected on the
+   * device, that the selected account has granted any requested permissions to
+   * our app and that we were able to establish a service connection to Google
+   * Play services.
+   */
+    @Override
+    public void onConnected(Bundle connectionHint) {
+        // Reaching onConnected means we consider the user signed in.
+        Log.i(TAG, "onConnected");
+        // Indicate that the sign in process is complete.
+        mSignInProgress = STATE_DEFAULT;
+    }
+
+    @Override
+    public void onConnectionSuspended(int cause) {
+        // re-establish connection
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult result) {
+        Log.i(TAG, "onConnectionFailed: ConnectionResult.getErrorCode() = "
+                + result.getErrorCode());
+
+        if (result.getErrorCode() == ConnectionResult.API_UNAVAILABLE) {
+            // An API requested for GoogleApiClient is not available. The device's current
+            // configuration might not be supported with the requested API or a required component
+            // may not be installed, such as the Android Wear application. You may need to use a
+            // second GoogleApiClient to manage the application's optional APIs.
+        } else if (mSignInProgress != STATE_IN_PROGRESS) {
+            // We do not have an intent in progress so we should store the latest
+            // error resolution intent for use when the sign in button is clicked.
+            mSignInIntent = result.getResolution();
+            mSignInError = result.getErrorCode();
+
+            if (mSignInProgress == STATE_SIGN_IN) {
+                // STATE_SIGN_IN indicates the user already clicked the sign in button
+                // so we should continue processing errors until the user is signed in
+                // or they click cancel.
+                resolveSignInError();
+            }
+        }
+
+        onSignedOut();
+    }
+
+    protected abstract void onSignedOut();
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -111,20 +128,52 @@ public class LoginActivity extends Activity implements ConnectionCallbacks, OnCo
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-
-        if (mGoogleApiClient.isConnected()) {
-            mGoogleApiClient.disconnect();
+    protected void onResume() {
+        Log.d(TAG, "onResume");
+        super.onResume();
+        if(!mGoogleApiClient.isConnected()){
+            Log.d(TAG, "onResume connect GoogleApiClient");
+            mGoogleApiClient.connect();
         }
     }
 
-    private void saveAccountPreference(String id){
-        SharedPreferences prefs = getSharedPreferences(Constants.PACKAGE_NAME, Context.MODE_PRIVATE);
+    @Override
+    protected void onStop() {
 
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putString(Constants.SHARED_PREFERENCES_ACCOUNT, id);
-        editor.commit();
+        Log.d(TAG, "onStop");
+        super.onStop();
+
+//        if (mGoogleApiClient.isConnected()) {
+//            mGoogleApiClient.disconnect();
+//        }
+    }
+
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        //do nothing
+    }
+
+    public boolean signOutFromGplus() {
+        try {
+            if (mGoogleApiClient.isConnected()) {
+                SharedPreferences prefs = getSharedPreferences(Constants.PACKAGE_NAME, Context.MODE_PRIVATE);
+                prefs.edit().remove(Constants.SHARED_PREFERENCES_ACCOUNT).commit();
+
+                Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
+                mGoogleApiClient.disconnect();
+                mGoogleApiClient.connect();
+            }
+            return true;
+        } catch(Exception e){
+            return false;
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(SAVED_PROGRESS, mSignInProgress);
     }
 
     /* Starts an appropriate intent or dialog for user interaction to resolve
@@ -133,7 +182,8 @@ public class LoginActivity extends Activity implements ConnectionCallbacks, OnCo
    * the user to consent to the permissions being requested by your app, a
    * setting to enable device networking, etc.
    */
-    private boolean resolveSignInError() {
+    public boolean resolveSignInError() {
+        Log.d(TAG, "resolveSignInError");
         if (mSignInIntent != null) {
             // We have an intent which will allow our user to sign in or
             // resolve an error.  For example if the user needs to
@@ -200,20 +250,5 @@ public class LoginActivity extends Activity implements ConnectionCallbacks, OnCo
             default:
                 return super.onCreateDialog(id);
         }
-    }
-
-    @Override
-    public void onConnected(Bundle bundle) {
-
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-
     }
 }

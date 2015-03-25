@@ -1,4 +1,4 @@
-package edu.gatech.cc.cs7470.facecard.View;
+package edu.gatech.cc.cs7470.facecard.View.fragments;
 
 import android.support.v7.app.ActionBarActivity;
 import android.app.Activity;
@@ -106,6 +106,7 @@ public class NavigationDrawerFragment extends Fragment {
                 new String[]{
                         getString(R.string.profile),
                         getString(R.string.friends),
+                        getString(R.string.settings),
                         getString(R.string.logout),
                 }));
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
