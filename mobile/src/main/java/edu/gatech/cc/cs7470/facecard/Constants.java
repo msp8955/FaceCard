@@ -7,6 +7,9 @@ public class Constants {
 
     public static final String PACKAGE_NAME = "edu.gatech.cc.cs7470.facecard";
 
+    //url
+    public static final String REGISTER_ACCOUNT_URL = "http://ec2-52-11-241-214.us-west-2.compute.amazonaws.com/facecard/setAccount.php";
+
     //profile layout settings
     public static final int PROFILE_PIC_SIZE = 100;
     public static final int PROFILE_PIC_RADIUS = 50;
@@ -15,6 +18,6 @@ public class Constants {
     public static final String SHARED_PREFERENCES_ACCOUNT = "account"; //Google+ account
     public static final String SHARED_PREFERENCES_BLUETOOTH = "bluetooth"; //Bluetooth
 
-    //TODO: change url
-    public static final String REGISTER_ACCOUNT_URL = "http://ec2-52-11-241-214.us-west-2.compute.amazonaws.com/facecard/setAccount.php";
+    //background bluetooth discovery
+    public static final int DISCOVERY_INTERVAL = 1000 * 10; //ten seconds
 }

@@ -16,6 +16,7 @@ import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
 
 import edu.gatech.cc.cs7470.facecard.Constants;
+import edu.gatech.cc.cs7470.facecard.Controller.receivers.BluetoothReceiver;
 import edu.gatech.cc.cs7470.facecard.Controller.tasks.RegisterBluetoothTask;
 import edu.gatech.cc.cs7470.facecard.Controller.utils.BluetoothUtil;
 import edu.gatech.cc.cs7470.facecard.Model.Bluetooth;
@@ -88,6 +89,8 @@ public class MainActivity extends BaseActivity
     @Override
     protected void onSignedOut() {
         Log.d(TAG, "onSignedOut Start");
+        BluetoothReceiver alarm = new BluetoothReceiver();
+        alarm.cancelAlarm(getApplicationContext());
         finish();
         Intent myIntent = new Intent(getApplicationContext(), LoginActivity.class);
         startActivity(myIntent);

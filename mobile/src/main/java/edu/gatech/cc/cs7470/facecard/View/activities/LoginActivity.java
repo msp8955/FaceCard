@@ -3,9 +3,11 @@ package edu.gatech.cc.cs7470.facecard.View.activities;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.android.gms.common.SignInButton;
 
@@ -14,6 +16,7 @@ import com.google.android.gms.plus.model.people.Person;
 
 
 import edu.gatech.cc.cs7470.facecard.Constants;
+import edu.gatech.cc.cs7470.facecard.Controller.receivers.BluetoothReceiver;
 import edu.gatech.cc.cs7470.facecard.R;
 
 /**
@@ -35,6 +38,11 @@ public class LoginActivity extends BaseActivity {
         setContentView(R.layout.activity_login);
 
         activity = this;
+
+        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+            Toast.makeText(this, R.string.ble_not_supported, Toast.LENGTH_SHORT).show();
+            finish();
+        }
 
         SharedPreferences prefs = getSharedPreferences(Constants.PACKAGE_NAME, MODE_PRIVATE);
         if(prefs.contains(Constants.SHARED_PREFERENCES_ACCOUNT)){
@@ -66,6 +74,11 @@ public class LoginActivity extends BaseActivity {
             Log.d(TAG, currentUser.getDisplayName());
             saveAccountPreference(currentUser.getId());
             mSignInProgress = STATE_DEFAULT;
+
+            // start background service
+            BluetoothReceiver alarm = new BluetoothReceiver();
+            alarm.setAlarm(getApplicationContext());
+
             finish();
             Intent i = new Intent(activity, MainActivity.class);
             startActivity(i);
