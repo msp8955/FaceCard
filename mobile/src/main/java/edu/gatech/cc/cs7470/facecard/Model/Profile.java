@@ -41,7 +41,6 @@ public class Profile {
             }
         }
 
-
         this.email = email;
 
         google_link = person.getUrl();
