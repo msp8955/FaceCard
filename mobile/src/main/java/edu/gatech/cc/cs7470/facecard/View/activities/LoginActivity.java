@@ -36,9 +36,18 @@ public class LoginActivity extends BaseActivity {
 
         activity = this;
 
+        SharedPreferences prefs = getSharedPreferences(Constants.PACKAGE_NAME, MODE_PRIVATE);
+        if(prefs.contains(Constants.SHARED_PREFERENCES_ACCOUNT)){
+            resolveSignInError();
+            finish();
+            Intent i = new Intent(activity, MainActivity.class);
+            startActivity(i);
+        }
+
         btnSignIn = (SignInButton) findViewById(R.id.sign_in_button);
         btnSignIn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                mGoogleApiClient.connect();
                 resolveSignInError();
             }
         });
