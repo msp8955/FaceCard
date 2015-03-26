@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.util.Log;
 
 import edu.gatech.cc.cs7470.facecard.Constants;
+import edu.gatech.cc.cs7470.facecard.Controller.tasks.DiscoverBluetoothTask;
 
 /**
  * Created by miseonpark on 3/25/15.
@@ -17,6 +18,8 @@ public class BluetoothReceiver extends BroadcastReceiver {
     public static final String TAG = "BluetoothReceiver";
     @Override
     public void onReceive(Context context, Intent intent) {
+        DiscoverBluetoothTask discoverBluetoothTask = new DiscoverBluetoothTask();
+        discoverBluetoothTask.discoverBluetooth(context);
         Log.d(TAG, "onReceive");
     }
 

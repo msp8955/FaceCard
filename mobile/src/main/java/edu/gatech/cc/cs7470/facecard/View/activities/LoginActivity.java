@@ -44,19 +44,18 @@ public class LoginActivity extends BaseActivity {
             finish();
         }
 
-        SharedPreferences prefs = getSharedPreferences(Constants.PACKAGE_NAME, MODE_PRIVATE);
-        if(prefs.contains(Constants.SHARED_PREFERENCES_ACCOUNT)){
-            resolveSignInError();
-            finish();
-            Intent i = new Intent(activity, MainActivity.class);
-            startActivity(i);
-        }
+//        SharedPreferences prefs = getSharedPreferences(Constants.PACKAGE_NAME, MODE_PRIVATE);
+//        if(prefs.contains(Constants.SHARED_PREFERENCES_ACCOUNT)){
+//            resolveSignInError();
+//            finish();
+//            Intent i = new Intent(activity, MainActivity.class);
+//            startActivity(i);
+//        }
 
         btnSignIn = (SignInButton) findViewById(R.id.sign_in_button);
         btnSignIn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                mGoogleApiClient.connect();
-                resolveSignInError();
+                signInWithGplus();
             }
         });
 
@@ -66,24 +65,51 @@ public class LoginActivity extends BaseActivity {
         }
     }
 
+//    @Override
+//    protected void onStart() {
+//        Log.d(TAG, "onStart");
+//        super.onStart();
+//        mGoogleApiClient = buildGoogleApiClient();
+//        mGoogleApiClient.connect();
+//    }
+
     @Override
     public void onConnected(Bundle connectionHint){
         Log.d(TAG, "onConnected");
-        if(mSignInProgress == STATE_SIGN_IN) {
-            Person currentUser = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
-            Log.d(TAG, currentUser.getDisplayName());
-            saveAccountPreference(currentUser.getId());
-            mSignInProgress = STATE_DEFAULT;
+        Person currentUser = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
+        Log.d(TAG, currentUser.getDisplayName());
+        saveAccountPreference(currentUser.getId());
+//        mSignInProgress = STATE_DEFAULT;
 
-            // start background service
-            BluetoothReceiver alarm = new BluetoothReceiver();
-            alarm.setAlarm(getApplicationContext());
+        // start background service
+        BluetoothReceiver alarm = new BluetoothReceiver();
+        alarm.setAlarm(getApplicationContext());
 
-            finish();
-            Intent i = new Intent(activity, MainActivity.class);
-            startActivity(i);
+        finish();
+        Intent i = new Intent(activity, MainActivity.class);
+        startActivity(i);
+//        if(mSignInProgress == STATE_SIGN_IN) {
+//            Person currentUser = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
+//            Log.d(TAG, currentUser.getDisplayName());
+//            saveAccountPreference(currentUser.getId());
+//            mSignInProgress = STATE_DEFAULT;
+//
+//            // start background service
+//            BluetoothReceiver alarm = new BluetoothReceiver();
+//            alarm.setAlarm(getApplicationContext());
+//
+//            finish();
+//            Intent i = new Intent(activity, MainActivity.class);
+//            startActivity(i);
+//        }
+//        mSignInProgress = STATE_DEFAULT;
+    }
+
+    private void signInWithGplus() {
+        if (!mGoogleApiClient.isConnecting()) {
+            mSignInClicked = true;
+            resolveSignInError();
         }
-        mSignInProgress = STATE_DEFAULT;
     }
 
     @Override
@@ -101,31 +127,45 @@ public class LoginActivity extends BaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode,
                                     Intent data) {
-        switch (requestCode) {
-            case RC_SIGN_IN:
-                if (resultCode == RESULT_OK) {
-                    // If the error resolution was successful we should continue
-                    // processing errors.
-                    mSignInProgress = STATE_SIGN_IN;
-                } else {
-                    // If the error resolution was not successful or the user canceled,
-                    // we should stop processing errors.
-                    mSignInProgress = STATE_DEFAULT;
-                }
+        Log.d(TAG, "onActivityResult");
 
-                if (!mGoogleApiClient.isConnecting()) {
-                    // If Google Play services resolved the issue with a dialog then
-                    // onStart is not called so we need to re-attempt connection here.
-                    mGoogleApiClient.connect();
-                }
-                break;
+        if (requestCode == RC_SIGN_IN) {
+            if (resultCode != RESULT_OK) {
+                mSignInClicked = false;
+            }
+
+            mIntentInProgress = false;
+
+            if (!mGoogleApiClient.isConnecting()) {
+                mGoogleApiClient.connect();
+            }
         }
+
+//        switch (requestCode) {
+//            case RC_SIGN_IN:
+//                if (resultCode == RESULT_OK) {
+//                    // If the error resolution was successful we should continue
+//                    // processing errors.
+//                    mSignInProgress = STATE_SIGN_IN;
+//                } else {
+//                    // If the error resolution was not successful or the user canceled,
+//                    // we should stop processing errors.
+//                    mSignInProgress = STATE_DEFAULT;
+//                }
+//
+//                if (!mGoogleApiClient.isConnecting()) {
+//                    // If Google Play services resolved the issue with a dialog then
+//                    // onStart is not called so we need to re-attempt connection here.
+//                    mGoogleApiClient.connect();
+//                }
+//                break;
+//        }
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.d(TAG, "onDestroy do nothing");
-    }
+//    @Override
+//    protected void onDestroy() {
+//        super.onDestroy();
+//        Log.d(TAG, "onDestroy do nothing");
+//    }
 
 }

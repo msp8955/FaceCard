@@ -19,5 +19,5 @@ public class Constants {
     public static final String SHARED_PREFERENCES_BLUETOOTH = "bluetooth"; //Bluetooth
 
     //background bluetooth discovery
-    public static final int DISCOVERY_INTERVAL = 1000 * 10; //ten seconds
+    public static final int DISCOVERY_INTERVAL = 1000 * 20; //ten seconds
 }
