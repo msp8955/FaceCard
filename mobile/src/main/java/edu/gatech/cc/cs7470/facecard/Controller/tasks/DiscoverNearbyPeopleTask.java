@@ -138,10 +138,13 @@ public class DiscoverNearbyPeopleTask extends AsyncTask<String, String, String> 
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
 
-        if(result.equals("successful")){
-            Log.d(TAG, "successful");
-        }else{
-            Log.d(TAG, "failed");
+        if(result!=null){
+            Log.d(TAG, result);
         }
+//        if(result.equals("successful")){
+//            Log.d(TAG, "successful");
+//        }else{
+//            Log.d(TAG, "failed");
+//        }
     }
 }

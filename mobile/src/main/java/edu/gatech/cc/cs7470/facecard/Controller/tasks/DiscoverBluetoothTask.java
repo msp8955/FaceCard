@@ -25,7 +25,7 @@ public class DiscoverBluetoothTask {
     private boolean mScanning;
     private Handler mHandler = new Handler();
 
-    private static final long SCAN_PERIOD = 2000; //2 seconds
+    private static final long SCAN_PERIOD = 5000; //5 seconds
 
 //    private BluetoothAdapter btAdapter;
     private ArrayList<Bluetooth> btDeviceList = new ArrayList<Bluetooth>();
@@ -107,7 +107,7 @@ public class DiscoverBluetoothTask {
         public void onLeScan(final BluetoothDevice device, int rssi,
                              byte[] scanRecord) {
 
-            Log.i("Found: ", device.getName() + " - " + device.getAddress() + " - " + device.getUuids()[0]);
+            Log.i("Found: ", device.getName() + " - " + device.getAddress());
 
 //            Bundle bundle = new Bundle();
 //            bundle.putString("ble_device_name", device.getName());
