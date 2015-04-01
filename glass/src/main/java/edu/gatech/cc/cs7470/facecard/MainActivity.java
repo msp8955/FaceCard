@@ -28,14 +28,16 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import android.util.Log;
+
 /**
  * Created by miseonpark on 3/11/15.
  */
 public class MainActivity extends Activity {
 
+    private static final String TAG = "MainActivity";
     private List<Card> mCards;
     private CardScrollView mCardScrollView;
-
     public static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     public BluetoothAdapter mBluetoothAdapter;
     private Context context = this;
@@ -44,14 +46,13 @@ public class MainActivity extends Activity {
     IntentFilter filter;
     String tag = "debugging";
     BroadcastReceiver mReceiver;
-
     GestureDetector mGestureDetector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.face_card_main);
-
+        //setContentView(R.layout.face_card_main);
+        Log.d(TAG, "start main activity");
         //initialize an array list of card object, which works the same as the list view..
         mCards = new ArrayList<Card>();
         mGestureDetector = this.createGestureDetector(this);
