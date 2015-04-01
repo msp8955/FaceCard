@@ -20,13 +20,14 @@ public class BluetoothUtil {
     public String getBluetoothId(){
 
         try {
-            BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
-            Method getUuidsMethod = BluetoothAdapter.class.getDeclaredMethod("getUuids", null);
-            ParcelUuid[] uuids = (ParcelUuid[]) getUuidsMethod.invoke(adapter, null);
-            for (ParcelUuid uuid : uuids) {
-                Log.d(TAG, "UUID: " + uuid.getUuid().toString());
-            }
-            return uuids[0].getUuid().toString();
+            String address = BluetoothAdapter.getDefaultAdapter().getAddress();
+//            Method getUuidsMethod = BluetoothAdapter.class.getDeclaredMethod("getUuids", null);
+//            ParcelUuid[] uuids = (ParcelUuid[]) getUuidsMethod.invoke(adapter, null);
+//            for (ParcelUuid uuid : uuids) {
+//                Log.d(TAG, "UUID: " + uuid.getUuid().toString());
+//            }
+            Log.d(TAG, "bluetooth address: " + address);
+            return address;
         }catch(Exception e){
             return "";
         }

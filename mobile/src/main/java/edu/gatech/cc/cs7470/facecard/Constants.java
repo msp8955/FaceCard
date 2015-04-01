@@ -7,6 +7,9 @@ public class Constants {
 
     public static final String PACKAGE_NAME = "edu.gatech.cc.cs7470.facecard";
 
+    //url
+    public static final String REGISTER_ACCOUNT_URL = "http://ec2-52-11-241-214.us-west-2.compute.amazonaws.com/facecard/setAccount.php";
+
     //profile layout settings
     public static final int PROFILE_PIC_SIZE = 100;
     public static final int PROFILE_PIC_RADIUS = 50;
@@ -14,7 +17,14 @@ public class Constants {
     //shared preferences labels
     public static final String SHARED_PREFERENCES_ACCOUNT = "account"; //Google+ account
     public static final String SHARED_PREFERENCES_BLUETOOTH = "bluetooth"; //Bluetooth
+    public static final String SHARED_PREFERENCES_GLASS = "glass"; //Glass
+    public static final String SHARED_PREFERENCES_HAS_GLASS = "has_glass"; //device has glass connected
 
-    //TODO: change url
-    public static final String REGISTER_ACCOUNT_URL = "http://ec2-52-11-241-214.us-west-2.compute.amazonaws.com/facecard/setAccount.php";
+    //background bluetooth discovery
+    public static final int DISCOVERY_INTERVAL = 1000 * 20; //twenty seconds
+    public static final int STATE_CONNECTION_STARTED = 0;
+    public static final int STATE_CONNECTION_LOST = 1;
+    public static final int READY_TO_CONN = 2;
+    public static final int SUCCESS_CONNECT = 0;
+    public static final int MESSAGE_READ = 1;
 }

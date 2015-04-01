@@ -17,4 +17,6 @@
     <string name="close">Close</string>
     <string name="profile_picture">User\'s profile picture.</string>
 
+    <string name="ble_not_supported">This application requires Bluetooth Low Energy. Closing the application.</string>
+
 </resources>

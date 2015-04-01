@@ -74,51 +74,6 @@ public class RegisterBluetoothTask extends AsyncTask<String, String, String> {
             Log.d(TAG, e.toString());
         }
 
-//        BasicNameValuePair accountPair = new BasicNameValuePair("google_account", accountId);
-//        BasicNameValuePair passwordPair = new BasicNameValuePair("google_password", accountId);
-//        BasicNameValuePair bluetoothPair = new BasicNameValuePair("bluetooth_id", bluetoothId);
-//        BasicNameValuePair firstNamePair = new BasicNameValuePair("first_name", firstName);
-//        BasicNameValuePair lastNamePair = new BasicNameValuePair("last_name", lastName);
-//        BasicNameValuePair tagPair = new BasicNameValuePair("personal_tags", tag);
-//        List<NameValuePair> nameValuePairList = new ArrayList<>();
-//        nameValuePairList.add(bluetoothPair);
-//        nameValuePairList.add(accountPair);
-//        nameValuePairList.add(passwordPair);
-//        nameValuePairList.add(firstNamePair);
-//        nameValuePairList.add(lastNamePair);
-//        nameValuePairList.add(tagPair);
-//        try {
-//            UrlEncodedFormEntity urlEncodedFormEntity = new UrlEncodedFormEntity(nameValuePairList);
-//            httpPost.setEntity(urlEncodedFormEntity);
-//
-//            try { //get response
-//                HttpResponse httpResponse = httpClient.execute(httpPost);
-//
-//                InputStream inputStream = httpResponse.getEntity().getContent();
-//                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-//                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-//
-//                StringBuilder stringBuilder = new StringBuilder();
-//                String bufferedStrChunk = null;
-//
-//                while((bufferedStrChunk = bufferedReader.readLine()) != null){
-//                    stringBuilder.append(bufferedStrChunk);
-//                }
-//
-//                Log.d(TAG, stringBuilder.toString());
-//
-//                return stringBuilder.toString();
-//
-//            } catch (ClientProtocolException e) {
-//                Log.d(TAG, e.toString());
-//            } catch (IOException e) {
-//                Log.d(TAG, e.toString());
-//            }
-//
-//        } catch (UnsupportedEncodingException e) {
-//            Log.d(TAG, e.toString());
-//        }
-
         return null;
     }
 
@@ -126,11 +81,15 @@ public class RegisterBluetoothTask extends AsyncTask<String, String, String> {
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
 
-        if(result.equals("true")){
-            Log.d(TAG, "successfully registered bluetooth id");
-        }else{
-            Log.d(TAG, "bluetooth id registration failed");
+        if(result!=null){
+            Log.d(TAG, result);
         }
+
+//        if(result.equals("true")){
+//            Log.d(TAG, "successfully registered bluetooth id");
+//        }else{
+//            Log.d(TAG, "bluetooth id registration failed");
+//        }
     }
 
 }

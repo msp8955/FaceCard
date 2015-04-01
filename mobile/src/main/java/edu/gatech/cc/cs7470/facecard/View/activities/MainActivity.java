@@ -1,6 +1,7 @@
 package edu.gatech.cc.cs7470.facecard.View.activities;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,10 +13,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v4.widget.DrawerLayout;
 
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
 
 import edu.gatech.cc.cs7470.facecard.Constants;
+import edu.gatech.cc.cs7470.facecard.Controller.receivers.BluetoothReceiver;
+import edu.gatech.cc.cs7470.facecard.Controller.tasks.BluetoothCommunicationTask;
 import edu.gatech.cc.cs7470.facecard.Controller.tasks.RegisterBluetoothTask;
 import edu.gatech.cc.cs7470.facecard.Controller.utils.BluetoothUtil;
 import edu.gatech.cc.cs7470.facecard.Model.Bluetooth;
@@ -53,21 +58,10 @@ public class MainActivity extends BaseActivity
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         currentNavigationFragment = 0;
 
-        if (mGoogleApiClient.isConnected() && Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
-            profile = new Profile(Plus.PeopleApi.getCurrentPerson(mGoogleApiClient),
-                    Plus.AccountApi.getAccountName(mGoogleApiClient));
-        }
-
-        //check for bluetooth registration
-        SharedPreferences prefs = getSharedPreferences(Constants.PACKAGE_NAME, MODE_PRIVATE);
-        if(!prefs.contains(Constants.SHARED_PREFERENCES_BLUETOOTH)){
-            registerBluetooth();
-        }
-
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new MainFragment()).commit();
-        }
+//        if (savedInstanceState == null) {
+//            getSupportFragmentManager().beginTransaction()
+//                    .add(R.id.container, new MainFragment()).commit();
+//        }
 
 //        tv_profile_description = (TextView)findViewById(R.id.profile_description);
 //        tv_profile_organization = (TextView)findViewById(R.id.profile_organization);
@@ -86,8 +80,50 @@ public class MainActivity extends BaseActivity
     }
 
     @Override
+    public void onConnected(Bundle arg) {
+        // Reaching onConnected means we consider the user signed in.
+        super.onConnected(arg);
+        Log.i(TAG, "onConnected");
+
+        if (mGoogleApiClient.isConnected() && Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
+            profile = new Profile(Plus.PeopleApi.getCurrentPerson(mGoogleApiClient),
+                    Plus.AccountApi.getAccountName(mGoogleApiClient));
+        }else{
+            Log.d(TAG, "onConnected profile not created");
+        }
+
+//        //check for bluetooth-glass
+//        SharedPreferences prefs = getSharedPreferences(Constants.PACKAGE_NAME, MODE_PRIVATE);
+//        if(!prefs.contains(Constants.SHARED_PREFERENCES_GLASS)){
+//            //TODO
+//        }
+        //check for bluetooth registration
+//        SharedPreferences prefs = getSharedPreferences(Constants.PACKAGE_NAME, MODE_PRIVATE);
+//        if(!prefs.contains(Constants.SHARED_PREFERENCES_BLUETOOTH)){
+//            registerBluetooth();
+//        }
+        BluetoothCommunicationTask task = new BluetoothCommunicationTask();
+        task.sendToGlass(getApplicationContext());
+
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.container, new MainFragment()).commit();
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int cause) {
+        super.onConnectionSuspended(cause);
+        onSignedOut();
+    }
+
+    @Override
     protected void onSignedOut() {
         Log.d(TAG, "onSignedOut Start");
+        //unregister bluetooth receiver
+        BluetoothReceiver alarm = new BluetoothReceiver();
+        alarm.cancelAlarm(getApplicationContext());
+
+        //change to login screen
         finish();
         Intent myIntent = new Intent(getApplicationContext(), LoginActivity.class);
         startActivity(myIntent);
@@ -125,11 +161,7 @@ public class MainActivity extends BaseActivity
                 }
             case 3:
                 //logout
-                if(signOutFromGplus()){
-                    onSignedOut();
-                }else{
-                    //Throw Error Message
-                }
+                signOutFromGplus();
                 break;
             default:
                 break;
@@ -149,11 +181,7 @@ public class MainActivity extends BaseActivity
                 mTitle = getString(R.string.settings);
             case 4:
                 //logout
-                if(signOutFromGplus()){
-                    onSignedOut();
-                }else{
-                    //Throw Error Message
-                }
+                signOutFromGplus();
                 break;
         }
     }
@@ -227,13 +255,63 @@ public class MainActivity extends BaseActivity
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                finish();
+                signOutFromGplus();
             }
         });
 
         AlertDialog dialog = builder.create();
         dialog.show();
 
+    }
+
+    public boolean signOutFromGplus() {
+        if (mGoogleApiClient.isConnected()) {
+            //handle GoogleApiClient
+            Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
+            mGoogleApiClient.disconnect();
+            mGoogleApiClient.connect();
+            Log.d(TAG, "signOutFromGplus");
+            onSignedOut();
+            return true;
+        }else{
+            onSignedOut();
+//            Log.d(TAG, "signOutFromGplus failed");
+            return false;
+        }
+//        try {
+//            if (mGoogleApiClient.isConnected()) {
+//                SharedPreferences prefs = getSharedPreferences(Constants.PACKAGE_NAME, Context.MODE_PRIVATE);
+//                prefs.edit().remove(Constants.SHARED_PREFERENCES_ACCOUNT).commit();
+//
+//                Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
+//                mGoogleApiClient.disconnect();
+//                mGoogleApiClient.connect();
+//            }
+//            return true;
+//        } catch(Exception e){
+//            return false;
+//        }
+    }
+
+    /**
+     * Revoking access from google
+     * */
+    private void revokeGplusAccess() {
+        if (mGoogleApiClient.isConnected()) {
+            Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
+            Plus.AccountApi.revokeAccessAndDisconnect(mGoogleApiClient)
+                    .setResultCallback(new ResultCallback<Status>() {
+                        @Override
+                        public void onResult(Status arg0) {
+                            Log.e(TAG, "User access revoked!");
+                            mGoogleApiClient.connect();
+                            finish();
+                            Intent myIntent = new Intent(getApplicationContext(), LoginActivity.class);
+                            startActivity(myIntent);
+                        }
+
+                    });
+        }
     }
 
     @Override

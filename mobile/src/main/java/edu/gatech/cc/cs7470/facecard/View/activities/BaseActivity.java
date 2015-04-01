@@ -40,8 +40,11 @@ public abstract class BaseActivity extends ActionBarActivity implements
     protected static final int DIALOG_PLAY_SERVICES_ERROR = 0;
     protected static int mSignInProgress;
 
-    private PendingIntent mSignInIntent;
-    private int mSignInError;
+    protected int mSignInError;
+    protected boolean mSignInClicked;
+
+    protected ConnectionResult mConnectionResult;
+    protected boolean mIntentInProgress;
 
     protected static GoogleApiClient mGoogleApiClient;
 
@@ -64,12 +67,14 @@ public abstract class BaseActivity extends ActionBarActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(mGoogleApiClient==null) {
-            mGoogleApiClient = buildGoogleApiClient();
-        }
-        if(!mGoogleApiClient.isConnected()){
-            mGoogleApiClient.connect();
-        }
+
+        mGoogleApiClient = buildGoogleApiClient();
+//        if(mGoogleApiClient==null) {
+//            mGoogleApiClient = buildGoogleApiClient();
+//        }
+//        if(!mGoogleApiClient.isConnected()){
+//            mGoogleApiClient.connect();
+//        }
     }
 
     /* onConnected is called when our Activity successfully connects to Google
@@ -82,6 +87,7 @@ public abstract class BaseActivity extends ActionBarActivity implements
     public void onConnected(Bundle connectionHint) {
         // Reaching onConnected means we consider the user signed in.
         Log.i(TAG, "onConnected");
+        mSignInClicked = false;
         // Indicate that the sign in process is complete.
         mSignInProgress = STATE_DEFAULT;
     }
@@ -97,26 +103,44 @@ public abstract class BaseActivity extends ActionBarActivity implements
         Log.i(TAG, "onConnectionFailed: ConnectionResult.getErrorCode() = "
                 + result.getErrorCode());
 
-        if (result.getErrorCode() == ConnectionResult.API_UNAVAILABLE) {
-            // An API requested for GoogleApiClient is not available. The device's current
-            // configuration might not be supported with the requested API or a required component
-            // may not be installed, such as the Android Wear application. You may need to use a
-            // second GoogleApiClient to manage the application's optional APIs.
-        } else if (mSignInProgress != STATE_IN_PROGRESS) {
-            // We do not have an intent in progress so we should store the latest
-            // error resolution intent for use when the sign in button is clicked.
-            mSignInIntent = result.getResolution();
-            mSignInError = result.getErrorCode();
+//        if (result.getErrorCode() == ConnectionResult.API_UNAVAILABLE) {
+//            // An API requested for GoogleApiClient is not available. The device's current
+//            // configuration might not be supported with the requested API or a required component
+//            // may not be installed, such as the Android Wear application. You may need to use a
+//            // second GoogleApiClient to manage the application's optional APIs.
+//        } else if (mSignInProgress != STATE_IN_PROGRESS) {
+//            // We do not have an intent in progress so we should store the latest
+//            // error resolution intent for use when the sign in button is clicked.
+//            mSignInIntent = result.getResolution();
+//            mSignInError = result.getErrorCode();
+//
+//            if (mSignInProgress == STATE_SIGN_IN) {
+//                // STATE_SIGN_IN indicates the user already clicked the sign in button
+//                // so we should continue processing errors until the user is signed in
+//                // or they click cancel.
+//                resolveSignInError();
+//            }
+//        }
 
-            if (mSignInProgress == STATE_SIGN_IN) {
-                // STATE_SIGN_IN indicates the user already clicked the sign in button
-                // so we should continue processing errors until the user is signed in
-                // or they click cancel.
+        if (!result.hasResolution()) {
+            GooglePlayServicesUtil.getErrorDialog(result.getErrorCode(), this,
+                    0).show();
+            return;
+        }
+
+        if (!mIntentInProgress) {
+            // Store the ConnectionResult for later usage
+            mConnectionResult = result;
+
+            if (mSignInClicked) {
+                // The user has already clicked 'sign-in' so we attempt to
+                // resolve all
+                // errors until the user is signed in, or they cancel.
                 resolveSignInError();
             }
         }
 
-        onSignedOut();
+//        onSignedOut();
     }
 
     protected abstract void onSignedOut();
@@ -143,31 +167,15 @@ public abstract class BaseActivity extends ActionBarActivity implements
         Log.d(TAG, "onStop");
         super.onStop();
 
-//        if (mGoogleApiClient.isConnected()) {
-//            mGoogleApiClient.disconnect();
-//        }
+        if (mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
+        }
     }
 
     @Override
     protected void onDestroy(){
         super.onDestroy();
         //do nothing
-    }
-
-    public boolean signOutFromGplus() {
-        try {
-            if (mGoogleApiClient.isConnected()) {
-                SharedPreferences prefs = getSharedPreferences(Constants.PACKAGE_NAME, Context.MODE_PRIVATE);
-                prefs.edit().remove(Constants.SHARED_PREFERENCES_ACCOUNT).commit();
-
-                Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
-                mGoogleApiClient.disconnect();
-                mGoogleApiClient.connect();
-            }
-            return true;
-        } catch(Exception e){
-            return false;
-        }
     }
 
     @Override
@@ -182,40 +190,53 @@ public abstract class BaseActivity extends ActionBarActivity implements
    * the user to consent to the permissions being requested by your app, a
    * setting to enable device networking, etc.
    */
-    public boolean resolveSignInError() {
+    public void resolveSignInError() {
         Log.d(TAG, "resolveSignInError");
-        if (mSignInIntent != null) {
-            // We have an intent which will allow our user to sign in or
-            // resolve an error.  For example if the user needs to
-            // select an account to sign in with, or if they need to consent
-            // to the permissions your app is requesting.
-
-            try {
-                // Send the pending intent that we stored on the most recent
-                // OnConnectionFailed callback.  This will allow the user to
-                // resolve the error currently preventing our connection to
-                // Google Play services.
-                mSignInProgress = STATE_IN_PROGRESS;
-                startIntentSenderForResult(mSignInIntent.getIntentSender(),
-                        RC_SIGN_IN, null, 0, 0, 0);
-                return true;
-            } catch (IntentSender.SendIntentException e) {
-                Log.i(TAG, "Sign in intent could not be sent: "
-                        + e.getLocalizedMessage());
-                // The intent was canceled before it was sent.  Attempt to connect to
-                // get an updated ConnectionResult.
-                mSignInProgress = STATE_SIGN_IN;
-                mGoogleApiClient.connect();
-                return false;
-            }
-        } else {
-            // Google Play services wasn't able to provide an intent for some
-            // error types, so we show the default Google Play services error
-            // dialog which may still start an intent on our behalf if the
-            // user can resolve the issue.
-            showDialog(DIALOG_PLAY_SERVICES_ERROR);
-            return true;
+        if(mConnectionResult==null){
+            return;
         }
+        Log.d(TAG, "resolveSignInError not null");
+        if (mConnectionResult.hasResolution()) {
+            try {
+                mIntentInProgress = true;
+                mConnectionResult.startResolutionForResult(this, RC_SIGN_IN);
+            } catch (IntentSender.SendIntentException e) {
+                mIntentInProgress = false;
+                mGoogleApiClient.connect();
+            }
+        }
+//        if (mSignInIntent != null) {
+//            // We have an intent which will allow our user to sign in or
+//            // resolve an error.  For example if the user needs to
+//            // select an account to sign in with, or if they need to consent
+//            // to the permissions your app is requesting.
+//
+//            try {
+//                // Send the pending intent that we stored on the most recent
+//                // OnConnectionFailed callback.  This will allow the user to
+//                // resolve the error currently preventing our connection to
+//                // Google Play services.
+//                mSignInProgress = STATE_IN_PROGRESS;
+//                startIntentSenderForResult(mSignInIntent.getIntentSender(),
+//                        RC_SIGN_IN, null, 0, 0, 0);
+//                return true;
+//            } catch (IntentSender.SendIntentException e) {
+//                Log.i(TAG, "Sign in intent could not be sent: "
+//                        + e.getLocalizedMessage());
+//                // The intent was canceled before it was sent.  Attempt to connect to
+//                // get an updated ConnectionResult.
+//                mSignInProgress = STATE_SIGN_IN;
+//                mGoogleApiClient.connect();
+//                return false;
+//            }
+//        } else {
+//            // Google Play services wasn't able to provide an intent for some
+//            // error types, so we show the default Google Play services error
+//            // dialog which may still start an intent on our behalf if the
+//            // user can resolve the issue.
+//            showDialog(DIALOG_PLAY_SERVICES_ERROR);
+//            return true;
+//        }
     }
 
     @Override
