@@ -17,7 +17,14 @@ public class Constants {
     //shared preferences labels
     public static final String SHARED_PREFERENCES_ACCOUNT = "account"; //Google+ account
     public static final String SHARED_PREFERENCES_BLUETOOTH = "bluetooth"; //Bluetooth
+    public static final String SHARED_PREFERENCES_GLASS = "glass"; //Glass
+    public static final String SHARED_PREFERENCES_HAS_GLASS = "has_glass"; //device has glass connected
 
     //background bluetooth discovery
     public static final int DISCOVERY_INTERVAL = 1000 * 20; //twenty seconds
+    public static final int STATE_CONNECTION_STARTED = 0;
+    public static final int STATE_CONNECTION_LOST = 1;
+    public static final int READY_TO_CONN = 2;
+    public static final int SUCCESS_CONNECT = 0;
+    public static final int MESSAGE_READ = 1;
 }

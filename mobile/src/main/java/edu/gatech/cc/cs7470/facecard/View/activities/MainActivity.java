@@ -20,6 +20,7 @@ import com.google.android.gms.plus.model.people.Person;
 
 import edu.gatech.cc.cs7470.facecard.Constants;
 import edu.gatech.cc.cs7470.facecard.Controller.receivers.BluetoothReceiver;
+import edu.gatech.cc.cs7470.facecard.Controller.tasks.BluetoothCommunicationTask;
 import edu.gatech.cc.cs7470.facecard.Controller.tasks.RegisterBluetoothTask;
 import edu.gatech.cc.cs7470.facecard.Controller.utils.BluetoothUtil;
 import edu.gatech.cc.cs7470.facecard.Model.Bluetooth;
@@ -91,11 +92,18 @@ public class MainActivity extends BaseActivity
             Log.d(TAG, "onConnected profile not created");
         }
 
+//        //check for bluetooth-glass
+//        SharedPreferences prefs = getSharedPreferences(Constants.PACKAGE_NAME, MODE_PRIVATE);
+//        if(!prefs.contains(Constants.SHARED_PREFERENCES_GLASS)){
+//            //TODO
+//        }
         //check for bluetooth registration
-        SharedPreferences prefs = getSharedPreferences(Constants.PACKAGE_NAME, MODE_PRIVATE);
-        if(!prefs.contains(Constants.SHARED_PREFERENCES_BLUETOOTH)){
-            registerBluetooth();
-        }
+//        SharedPreferences prefs = getSharedPreferences(Constants.PACKAGE_NAME, MODE_PRIVATE);
+//        if(!prefs.contains(Constants.SHARED_PREFERENCES_BLUETOOTH)){
+//            registerBluetooth();
+//        }
+        BluetoothCommunicationTask task = new BluetoothCommunicationTask();
+        task.sendToGlass(getApplicationContext());
 
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.container, new MainFragment()).commit();
