@@ -30,7 +30,7 @@
                 android:layout_weight="1"
                 android:text="Thad Starner"
                 android:textSize="15dp"
-                
+
                 android:gravity="center"/>
 
             </LinearLayout>
