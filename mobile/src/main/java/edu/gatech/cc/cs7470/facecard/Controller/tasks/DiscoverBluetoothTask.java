@@ -12,6 +12,7 @@ import android.os.Message;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import edu.gatech.cc.cs7470.facecard.Model.Bluetooth;
 
@@ -28,7 +29,7 @@ public class DiscoverBluetoothTask {
     private static final long SCAN_PERIOD = 5000; //5 seconds
 
 //    private BluetoothAdapter btAdapter;
-    private ArrayList<Bluetooth> btDeviceList = new ArrayList<Bluetooth>();
+    private List<String> btDeviceList = new ArrayList<String>();
 
     public void discoverBluetooth(Context context){
 
@@ -69,8 +70,12 @@ public class DiscoverBluetoothTask {
             mScanning = true;
             mBluetoothAdapter.startLeScan(mLeScanCallback);
         } else {
+            Log.d(TAG, "scanLeDevice stopped");
             mScanning = false;
             mBluetoothAdapter.stopLeScan(mLeScanCallback);
+
+            String[] bluetoothList = btDeviceList.toArray(new String[btDeviceList.size()]);
+            new DiscoverNearbyPeopleTask().execute(bluetoothList);
         }
     }
 
@@ -108,6 +113,7 @@ public class DiscoverBluetoothTask {
                              byte[] scanRecord) {
 
             Log.i("Found: ", device.getName() + " - " + device.getAddress());
+            btDeviceList.add(device.getAddress());
 
 //            Bundle bundle = new Bundle();
 //            bundle.putString("ble_device_name", device.getName());

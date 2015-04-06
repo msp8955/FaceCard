@@ -22,6 +22,10 @@ public class Profile {
     private String facebook_link;
     private String linkedIn_link;
 
+    public Profile(){
+
+    }
+
     public Profile(Person person, String email){
 
 //        bluetoothInfo = new Bluetooth();

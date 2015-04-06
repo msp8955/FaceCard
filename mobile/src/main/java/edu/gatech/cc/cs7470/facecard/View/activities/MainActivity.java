@@ -98,10 +98,10 @@ public class MainActivity extends BaseActivity
 //            //TODO
 //        }
         //check for bluetooth registration
-//        SharedPreferences prefs = getSharedPreferences(Constants.PACKAGE_NAME, MODE_PRIVATE);
-//        if(!prefs.contains(Constants.SHARED_PREFERENCES_BLUETOOTH)){
-//            registerBluetooth();
-//        }
+        SharedPreferences prefs = getSharedPreferences(Constants.PACKAGE_NAME, MODE_PRIVATE);
+        if(!prefs.contains(Constants.SHARED_PREFERENCES_BLUETOOTH)){
+            registerBluetooth();
+        }
         BluetoothCommunicationTask task = new BluetoothCommunicationTask();
         task.sendToGlass(getApplicationContext());
 
@@ -241,7 +241,7 @@ public class MainActivity extends BaseActivity
 
                 new RegisterBluetoothTask().execute(profile.getEmail(),
                         profile.getBluetoothInfo().getBluetoothId(), profile.getName(),
-                        profile.getName(), profile.getTagline());
+                        profile.getTagline());
 
                 //save
                 SharedPreferences prefs = getSharedPreferences(Constants.PACKAGE_NAME, MODE_PRIVATE);

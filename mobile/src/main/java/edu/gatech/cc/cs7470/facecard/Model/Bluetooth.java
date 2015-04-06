@@ -8,6 +8,10 @@ public class Bluetooth {
     private String bluetoothId;
     private String accountId;
 
+    public Bluetooth(String bluetoothId){
+        this.bluetoothId = bluetoothId;
+    }
+
     public Bluetooth(String bluetoothId, String accountId){
         this.bluetoothId = bluetoothId;
         this.accountId = accountId;
