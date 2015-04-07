@@ -9,6 +9,7 @@ public class Constants {
 
     //url
     public static final String REGISTER_ACCOUNT_URL = "http://ec2-52-11-241-214.us-west-2.compute.amazonaws.com/facecard/setAccount.php";
+    public static final String DISCOVER_ACCOUNT_URL = "http://ec2-54-68-110-119.us-west-2.compute.amazonaws.com/facecard/getInfo.php";
 
     //profile layout settings
     public static final int PROFILE_PIC_SIZE = 100;
@@ -21,7 +22,7 @@ public class Constants {
     public static final String SHARED_PREFERENCES_HAS_GLASS = "has_glass"; //device has glass connected
 
     //background bluetooth discovery
-    public static final int DISCOVERY_INTERVAL = 1000 * 20; //twenty seconds
+    public static final int DISCOVERY_INTERVAL = 1000 * 30; //thirty seconds
     public static final int STATE_CONNECTION_STARTED = 0;
     public static final int STATE_CONNECTION_LOST = 1;
     public static final int READY_TO_CONN = 2;

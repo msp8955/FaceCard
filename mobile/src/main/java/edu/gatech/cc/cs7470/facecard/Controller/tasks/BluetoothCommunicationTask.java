@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import edu.gatech.cc.cs7470.facecard.Constants;
+import edu.gatech.cc.cs7470.facecard.Model.FaceCard;
 
 /**
  * Created by miseonpark on 3/31/15.
@@ -31,14 +32,13 @@ import edu.gatech.cc.cs7470.facecard.Constants;
 public class BluetoothCommunicationTask {
 
     private static final String TAG = "BluetoothCommunicationTask";
-    public static String glassUUID = "00001101-0000-1000-8000-00805F9B34FB";
-    public static final UUID MY_UUID = UUID.fromString(glassUUID);
-    public BluetoothAdapter mBluetoothAdapter;
+    private static String glassUUID = "00001101-0000-1000-8000-00805F9B34FB";
+    private static final UUID MY_UUID = UUID.fromString(glassUUID);
+    private static BluetoothAdapter mBluetoothAdapter;
     private Context context;
-    Set<BluetoothDevice> devicesArray;
-    ArrayList<BluetoothDevice> devices;
-    BroadcastReceiver mReceiver;
-    IntentFilter filter;
+    private ArrayList<BluetoothDevice> devices;
+    private static BroadcastReceiver mReceiver;
+    private static IntentFilter filter;
 
 //    public static String msgToSend;
 //    ConnectedThread mConnectedThread;
@@ -59,6 +59,10 @@ public class BluetoothCommunicationTask {
 //
 //    int REQUEST_ENABLE_BT = 1;
 //    AcceptThread accThread;
+
+    public BluetoothCommunicationTask(Context c){
+        context = c;
+    }
 
     public Handler mHandler= new Handler(){
         @Override
@@ -84,11 +88,18 @@ public class BluetoothCommunicationTask {
         }
     };
 
-    public void sendToGlass(Context c){
+    public void sendToGlass(FaceCard[] fc){
+        for(FaceCard faceCard : fc) {
+            Log.d(TAG, "FaceCards to be sent: " + faceCard.getBluetoothId());
+        }
+    }
 
-        context = c;
+    public void connectToGlass(){
+
+        Log.d(TAG, "connectToGlass");
 
         initBluetooth();
+
         //check the bluetooth
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBluetoothAdapter == null) {
@@ -122,6 +133,7 @@ public class BluetoothCommunicationTask {
     }
 
     private void initBluetooth(){
+        Log.d(TAG, "initBluetooth");
         devices = new ArrayList<BluetoothDevice>();
         // Create a BroadcastReceiver for ACTION_FOUND
         mReceiver = new BroadcastReceiver() {

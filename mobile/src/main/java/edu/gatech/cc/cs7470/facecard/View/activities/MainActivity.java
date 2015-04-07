@@ -102,8 +102,9 @@ public class MainActivity extends BaseActivity
         if(!prefs.contains(Constants.SHARED_PREFERENCES_BLUETOOTH)){
             registerBluetooth();
         }
-        BluetoothCommunicationTask task = new BluetoothCommunicationTask();
-        task.sendToGlass(getApplicationContext());
+
+        BluetoothCommunicationTask task = new BluetoothCommunicationTask(this);
+        task.connectToGlass();
 
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.container, new MainFragment()).commit();

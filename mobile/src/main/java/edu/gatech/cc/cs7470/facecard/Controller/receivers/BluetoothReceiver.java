@@ -18,8 +18,8 @@ public class BluetoothReceiver extends BroadcastReceiver {
     public static final String TAG = "BluetoothReceiver";
     @Override
     public void onReceive(Context context, Intent intent) {
-        DiscoverBluetoothTask discoverBluetoothTask = new DiscoverBluetoothTask();
-        discoverBluetoothTask.discoverBluetooth(context);
+        DiscoverBluetoothTask discoverBluetoothTask = new DiscoverBluetoothTask(context);
+        discoverBluetoothTask.discoverBluetooth();
         Log.d(TAG, "onReceive");
     }
 

@@ -12,7 +12,9 @@ import android.os.Message;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import edu.gatech.cc.cs7470.facecard.Model.Bluetooth;
 
@@ -25,13 +27,18 @@ public class DiscoverBluetoothTask {
     private BluetoothAdapter mBluetoothAdapter;
     private boolean mScanning;
     private Handler mHandler = new Handler();
+    private Context context;
 
-    private static final long SCAN_PERIOD = 5000; //5 seconds
+    private static final long SCAN_PERIOD = 2000; //5 seconds
 
 //    private BluetoothAdapter btAdapter;
-    private List<String> btDeviceList = new ArrayList<String>();
+    private Set<String> btDeviceList = new HashSet<String>();
 
-    public void discoverBluetooth(Context context){
+    public DiscoverBluetoothTask(Context c){
+        context = c;
+    }
+
+    public void discoverBluetooth(){
 
         Log.d(TAG, "discover bluetooth");
 
@@ -64,18 +71,27 @@ public class DiscoverBluetoothTask {
                 public void run() {
                     mScanning = false;
                     mBluetoothAdapter.stopLeScan(mLeScanCallback);
+                    Log.d(TAG, "scanLeDevice stopped");
+                    StringBuilder stringBuilder = new StringBuilder();
+                    int i=0;
+                    for(String bt : btDeviceList){
+                        if(i+1<btDeviceList.size()){
+                            stringBuilder.append(bt + ",");
+                        }else{
+                            stringBuilder.append(bt + "," + "AA:AA:AA:AA:AA:AA,123");
+                        }
+                        i++;
+                    }
+                    new DiscoverNearbyPeopleTask(context).execute(stringBuilder.toString());
+
                 }
             }, SCAN_PERIOD);
 
             mScanning = true;
             mBluetoothAdapter.startLeScan(mLeScanCallback);
         } else {
-            Log.d(TAG, "scanLeDevice stopped");
             mScanning = false;
             mBluetoothAdapter.stopLeScan(mLeScanCallback);
-
-            String[] bluetoothList = btDeviceList.toArray(new String[btDeviceList.size()]);
-            new DiscoverNearbyPeopleTask().execute(bluetoothList);
         }
     }
 
@@ -113,7 +129,9 @@ public class DiscoverBluetoothTask {
                              byte[] scanRecord) {
 
             Log.i("Found: ", device.getName() + " - " + device.getAddress());
-            btDeviceList.add(device.getAddress());
+            if(!btDeviceList.contains(device.getAddress())){
+                btDeviceList.add(device.getAddress());
+            }
 
 //            Bundle bundle = new Bundle();
 //            bundle.putString("ble_device_name", device.getName());
