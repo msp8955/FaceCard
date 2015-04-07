@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+import android.util.Log;
 
 /**
  * A {@link Service} that publishes a {@link LiveCard} in the timeline.
@@ -60,7 +61,7 @@ public class FaceCardMainService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         context = getApplicationContext();
-
+        Log.d(LIVE_CARD_TAG, "start service");
         mBluetoothAdapter = bluetoothManager.getAdapter();
 
         if (mBluetoothAdapter == null) {
@@ -81,7 +82,7 @@ public class FaceCardMainService extends Service {
             if (mLiveCard == null) {
                 mLiveCard = new LiveCard(this, LIVE_CARD_TAG);
 
-                RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.face_card_main);
+                RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.grid_four_views);
                 mLiveCard.setViews(remoteViews);
 
                 // Display the options menu when the live card is tapped.
