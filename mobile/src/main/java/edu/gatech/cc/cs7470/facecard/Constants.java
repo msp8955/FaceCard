@@ -16,6 +16,7 @@ public class Constants {
     public static final int PROFILE_PIC_RADIUS = 50;
 
     //shared preferences labels
+    public static final String SHARED_PREFERENCES_ALARM = "alarm"; //Background service
     public static final String SHARED_PREFERENCES_ACCOUNT = "account"; //Google+ account
     public static final String SHARED_PREFERENCES_BLUETOOTH = "bluetooth"; //Bluetooth
     public static final String SHARED_PREFERENCES_GLASS = "glass"; //Glass
@@ -28,4 +29,5 @@ public class Constants {
     public static final int READY_TO_CONN = 2;
     public static final int SUCCESS_CONNECT = 0;
     public static final int MESSAGE_READ = 1;
+    public static final int MESSAGE_WRITE = 2;
 }
