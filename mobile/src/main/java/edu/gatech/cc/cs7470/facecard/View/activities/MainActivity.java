@@ -48,6 +48,7 @@ public class MainActivity extends BaseActivity
     private int currentNavigationFragment;
 
     private Profile profile;
+    private BluetoothCommunicationTask bluetoothCommunicationTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +68,7 @@ public class MainActivity extends BaseActivity
 //        tv_profile_organization = (TextView)findViewById(R.id.profile_organization);
 //        iv_profile_picture = (ImageView)findViewById(R.id.profile_picture);
 //        ll_profile_background = (LinearLayout)findViewById(R.id.profile_background);
+
 
         mTitle = getTitle();
 
@@ -97,14 +99,12 @@ public class MainActivity extends BaseActivity
 //        if(!prefs.contains(Constants.SHARED_PREFERENCES_GLASS)){
 //            //TODO
 //        }
+
         //check for bluetooth registration
         SharedPreferences prefs = getSharedPreferences(Constants.PACKAGE_NAME, MODE_PRIVATE);
         if(!prefs.contains(Constants.SHARED_PREFERENCES_BLUETOOTH)){
             registerBluetooth();
         }
-
-        BluetoothCommunicationTask task = new BluetoothCommunicationTask(this);
-        task.connectToGlass();
 
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.container, new MainFragment()).commit();
@@ -123,6 +123,13 @@ public class MainActivity extends BaseActivity
         //unregister bluetooth receiver
         BluetoothReceiver alarm = new BluetoothReceiver();
         alarm.cancelAlarm(getApplicationContext());
+
+        SharedPreferences prefs = getSharedPreferences(Constants.PACKAGE_NAME, MODE_PRIVATE);
+        if(prefs.contains(Constants.SHARED_PREFERENCES_ALARM)){
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.remove(Constants.SHARED_PREFERENCES_ALARM);
+            editor.commit();
+        }
 
         //change to login screen
         finish();
@@ -194,7 +201,6 @@ public class MainActivity extends BaseActivity
         actionBar.setTitle(mTitle);
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (!mNavigationDrawerFragment.isDrawerOpen()) {
@@ -250,6 +256,17 @@ public class MainActivity extends BaseActivity
                 editor.putString(Constants.SHARED_PREFERENCES_BLUETOOTH, uuid);
                 editor.commit();
 
+                if(!prefs.contains(Constants.SHARED_PREFERENCES_ALARM)){
+                    bluetoothCommunicationTask = new BluetoothCommunicationTask(getApplicationContext());
+                    bluetoothCommunicationTask.connectToGlass();
+                    //start background service
+                    Log.d(TAG, "setting alarm");
+                    BluetoothReceiver alarm = new BluetoothReceiver();
+                    alarm.setAlarm(getApplicationContext());
+                    editor.putBoolean(Constants.SHARED_PREFERENCES_ALARM, true);
+                    editor.commit();
+                }
+
             }
         });
 
@@ -276,7 +293,7 @@ public class MainActivity extends BaseActivity
             return true;
         }else{
             onSignedOut();
-//            Log.d(TAG, "signOutFromGplus failed");
+            Log.d(TAG, "signOutFromGplus not connected");
             return false;
         }
 //        try {

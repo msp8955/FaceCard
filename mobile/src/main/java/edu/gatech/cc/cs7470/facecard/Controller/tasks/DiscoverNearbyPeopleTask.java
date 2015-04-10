@@ -106,7 +106,8 @@ public class DiscoverNearbyPeopleTask extends AsyncTask<String, String, String> 
         if(result.equals("successful") && faceCards!= null && faceCards.length>0){
             Log.d(TAG, "discovered neighbors: " + faceCards.length);
             BluetoothCommunicationTask task = new BluetoothCommunicationTask(context);
-            task.sendToGlass(faceCards);
+            task.connectToGlass();
+//            task.sendToGlass(faceCards);
         }
 //        if(result.equals("successful")){
 //            Log.d(TAG, "successful");

@@ -49,6 +49,7 @@ public class FaceCardMainActivity extends Activity {
     public static final int STATE_CONNECTION_STARTED = 0;
     public static final int STATE_CONNECTION_LOST = 1;
     public static final int READY_TO_CONN = 2;
+    public static final int READ_FROM_CONNECTION = 3;
 
     ConnectedThread mConnectedThread;
     BluetoothAdapter mBluetoothAdapter;
@@ -101,6 +102,13 @@ public class FaceCardMainActivity extends Activity {
                         // device
                         Toast.makeText(getApplicationContext(), "bluetooth ready to connect", Toast.LENGTH_LONG).show();
                         startListening();
+                        break;
+                    case READ_FROM_CONNECTION:
+                        byte[] readBuf = (byte[]) msg.obj;
+                        int bufferContent = ByteBuffer.wrap(readBuf).getInt();
+                        String string = new String(readBuf);
+                        Log.d(TAG, "bluetooth message read: " + string);
+//                        Toast.makeText(getApplicationContext(), "read from connection: " + string, Toast.LENGTH_LONG).show();
                         break;
                     default:
                         break;
@@ -206,8 +214,27 @@ public class FaceCardMainActivity extends Activity {
 
         public void run() {
             Log.i(TAG, "BEGIN mConnectedThread");
-            byte[] buffer = new byte[4];
-            int bytes;
+
+            byte[] buffer;  // buffer store for the stream
+            int bytes; // bytes returned from read()
+
+            // Keep listening to the InputStream until an exception occurs
+            while (true) {
+                try {
+                    // Read from the InputStream
+                    buffer = new byte[1024];
+
+                    bytes = mmInStream.read(buffer);
+                    // Send the obtained bytes to the UI activity
+                    handle.obtainMessage(READ_FROM_CONNECTION, bytes, -1, buffer)
+                            .sendToTarget();
+                    Log.i(TAG, "message received!");
+
+                } catch (IOException e) {
+                    Log.i(TAG, "message failed!");
+                    break;
+                }
+            }
         }
 
         public void connectionLost() {

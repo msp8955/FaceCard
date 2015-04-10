@@ -81,10 +81,6 @@ public class LoginActivity extends BaseActivity {
         saveAccountPreference(currentUser.getId());
 //        mSignInProgress = STATE_DEFAULT;
 
-        // start background service
-        BluetoothReceiver alarm = new BluetoothReceiver();
-        alarm.setAlarm(getApplicationContext());
-
         finish();
         Intent i = new Intent(activity, MainActivity.class);
         startActivity(i);

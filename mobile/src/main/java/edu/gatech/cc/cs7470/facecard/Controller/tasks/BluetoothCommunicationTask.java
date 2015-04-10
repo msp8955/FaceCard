@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -32,13 +33,14 @@ import edu.gatech.cc.cs7470.facecard.Model.FaceCard;
 public class BluetoothCommunicationTask {
 
     private static final String TAG = "BluetoothCommunicationTask";
-    private static String glassUUID = "00001101-0000-1000-8000-00805F9B34FB";
+    private static final String glassUUID = "00001101-0000-1000-8000-00805F9B34FB";
     private static final UUID MY_UUID = UUID.fromString(glassUUID);
-    private static BluetoothAdapter mBluetoothAdapter;
+    private BluetoothAdapter mBluetoothAdapter;
     private Context context;
-    private ArrayList<BluetoothDevice> devices;
-    private static BroadcastReceiver mReceiver;
-    private static IntentFilter filter;
+    private BroadcastReceiver mReceiver;
+    private IntentFilter filter;
+    private ConnectedThread connectedThread;
+    private ConnectThread connectThread;
 
 //    public static String msgToSend;
 //    ConnectedThread mConnectedThread;
@@ -74,8 +76,10 @@ public class BluetoothCommunicationTask {
                 case Constants.SUCCESS_CONNECT:
                     //read and write data from remote device
                     context.unregisterReceiver(mReceiver);
-                    ConnectedThread connectedThread = new ConnectedThread((BluetoothSocket)msg.obj);
-                    connectedThread.start();
+                    if(connectedThread==null) {
+                        connectedThread = new ConnectedThread((BluetoothSocket) msg.obj);
+                        connectedThread.start();
+                    }
                     Log.d(TAG, "bluetooth connected");
                     break;
                 case Constants.MESSAGE_READ:
@@ -84,14 +88,57 @@ public class BluetoothCommunicationTask {
                     String string = new String(readBuf);
                     Log.d(TAG, "bluetooth message read: " + string);
                     break;
+                case Constants.MESSAGE_WRITE:
+                    if(connectedThread==null) {
+                        connectedThread = new ConnectedThread((BluetoothSocket) msg.obj);
+                        connectedThread.start();
+                    }
+//                    FaceCard faceCard = (FaceCard) msg.obj;
+//                    Log.d(TAG, "FaceCards to be sent: " + faceCard.getBluetoothId() + " " + faceCard.getName());
+                    Log.d(TAG, "FaceCards to be sent: ");
+                    String send = "hello";
+                    connectedThread.write(send.getBytes());
+                    context.unregisterReceiver(mReceiver);
             }
         }
     };
 
     public void sendToGlass(FaceCard[] fc){
-        for(FaceCard faceCard : fc) {
-            Log.d(TAG, "FaceCards to be sent: " + faceCard.getBluetoothId());
+        //check the bluetooth
+        if(fc==null || fc.length==0){
+            return;
         }
+
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (mBluetoothAdapter != null && mBluetoothAdapter.isEnabled()) {
+            Set<BluetoothDevice> devicesArray = mBluetoothAdapter.getBondedDevices();
+            // If there are devices
+            if (devicesArray != null && devicesArray.size() > 0) {
+                // Loop through paired devices
+                for (BluetoothDevice device : devicesArray) {
+                    if(device.getName().contains("Glass")){
+                        Log.d(TAG, "Sending info to Glass device: " + device.getName() + " " + device.getAddress() + " " + device.getUuids());
+                        for(FaceCard faceCard : fc) {
+                            Log.d(TAG, "FaceCards to be sent: " + faceCard.getBluetoothId());
+                            BluetoothDevice selectedDevice = device;
+                            if(connectThread==null) {
+                                connectThread = new ConnectThread(selectedDevice);
+                                connectThread.start();
+                            }
+                            mHandler.obtainMessage(Constants.MESSAGE_WRITE, connectThread.mmSocket)
+                                    .sendToTarget();
+//                            mHandler.obtainMessage(Constants.MESSAGE_WRITE, faceCard)
+//                                    .sendToTarget();
+                        }
+                    }
+                    Log.d(TAG, device.getName() + " " + device.getAddress() + " " + device.getUuids());
+                }
+            }
+
+        }
+
+        unregisterReceiver();
+
     }
 
     public void connectToGlass(){
@@ -121,11 +168,12 @@ public class BluetoothCommunicationTask {
                     if(device.getName().contains("Glass")){
                         Log.d(TAG, "connecting to Glass device: " + device.getName() + " " + device.getAddress() + " " + device.getUuids());
                         BluetoothDevice selectedDevice = device;
-                        ConnectThread connect = new ConnectThread(selectedDevice);
-                        connect.start();
+                        if(connectThread==null) {
+                            connectThread = new ConnectThread(selectedDevice);
+                            connectThread.start();
+                        }
                     }
                     Log.d(TAG, device.getName() + " " + device.getAddress() + " " + device.getUuids());
-                    devices.add(device);
                 }
             }
         }
@@ -134,7 +182,6 @@ public class BluetoothCommunicationTask {
 
     private void initBluetooth(){
         Log.d(TAG, "initBluetooth");
-        devices = new ArrayList<BluetoothDevice>();
         // Create a BroadcastReceiver for ACTION_FOUND
         mReceiver = new BroadcastReceiver() {
             //once the receiver receives an action, it will break and stop receiving notifications.
@@ -145,22 +192,25 @@ public class BluetoothCommunicationTask {
                     // Get the BluetoothDevice object from the Intent
                     BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                     Log.d(TAG, device.getName() + " " + device.getAddress() + " " + device.getUuids());
-                    devices.add(device);
                 }
             }
         };
         // Register the BroadcastReceiver
         filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-        context.registerReceiver(mReceiver, filter); // Don't forget to unregister during onDestroy
+        context.getApplicationContext().registerReceiver(mReceiver, filter); // Don't forget to unregister during onDestroy
         filter = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
-        context.registerReceiver(mReceiver, filter);
+        context.getApplicationContext().registerReceiver(mReceiver, filter);
         filter = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
-        context.registerReceiver(mReceiver, filter);
+        context.getApplicationContext().registerReceiver(mReceiver, filter);
         filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
-        context.registerReceiver(mReceiver, filter);
+        context.getApplicationContext().registerReceiver(mReceiver, filter);
     }
 
-    private class ConnectedThread extends Thread {
+    public void unregisterReceiver(){
+        context.unregisterReceiver(mReceiver);
+    }
+
+    public class ConnectedThread extends Thread {
         private final BluetoothSocket mmSocket;
         private final InputStream mmInStream;
         private final OutputStream mmOutStream;

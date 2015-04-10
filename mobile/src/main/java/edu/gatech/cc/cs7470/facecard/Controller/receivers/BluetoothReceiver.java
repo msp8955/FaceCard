@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.util.Log;
 
 import edu.gatech.cc.cs7470.facecard.Constants;
+import edu.gatech.cc.cs7470.facecard.Controller.tasks.BluetoothCommunicationTask;
 import edu.gatech.cc.cs7470.facecard.Controller.tasks.DiscoverBluetoothTask;
 
 /**
@@ -16,6 +17,7 @@ import edu.gatech.cc.cs7470.facecard.Controller.tasks.DiscoverBluetoothTask;
 public class BluetoothReceiver extends BroadcastReceiver {
 
     public static final String TAG = "BluetoothReceiver";
+
     @Override
     public void onReceive(Context context, Intent intent) {
         DiscoverBluetoothTask discoverBluetoothTask = new DiscoverBluetoothTask(context);
@@ -29,7 +31,8 @@ public class BluetoothReceiver extends BroadcastReceiver {
         AlarmManager manager=(AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, BluetoothReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
-        manager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), Constants.DISCOVERY_INTERVAL, pendingIntent);
+        manager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(),
+                Constants.DISCOVERY_INTERVAL, pendingIntent);
     }
 
     public void cancelAlarm(Context context)
