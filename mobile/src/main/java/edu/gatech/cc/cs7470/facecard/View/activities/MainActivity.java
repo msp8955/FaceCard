@@ -152,22 +152,22 @@ public class MainActivity extends BaseActivity
                     currentNavigationFragment = position;
                 }
                 break;
+//            case 1:
+//                if(currentNavigationFragment!=position) {
+//                    fragmentManager.beginTransaction()
+//                            .replace(R.id.container, FriendListFragment.newInstance())
+//                            .commit();
+//                    currentNavigationFragment = position;
+//                }
+//                break;
             case 1:
-                if(currentNavigationFragment!=position) {
-                    fragmentManager.beginTransaction()
-                            .replace(R.id.container, FriendListFragment.newInstance())
-                            .commit();
-                    currentNavigationFragment = position;
-                }
-                break;
-            case 2:
                 if(currentNavigationFragment!=position) {
                     fragmentManager.beginTransaction()
                             .replace(R.id.container, MainFragment.newInstance())
                             .commit();
                     currentNavigationFragment = position;
                 }
-            case 3:
+            case 2:
                 //logout
                 signOutFromGplus();
                 break;
@@ -175,23 +175,6 @@ public class MainActivity extends BaseActivity
                 break;
         }
 
-    }
-
-    public void onSectionAttached(int number) {
-        switch (number) {
-            case 1:
-                mTitle = getString(R.string.profile);
-                break;
-            case 2:
-                mTitle = getString(R.string.friends);
-                break;
-            case 3:
-                mTitle = getString(R.string.settings);
-            case 4:
-                //logout
-                signOutFromGplus();
-                break;
-        }
     }
 
     public void restoreActionBar() {

@@ -105,7 +105,7 @@ public class NavigationDrawerFragment extends Fragment {
                 android.R.id.text1,
                 new String[]{
                         getString(R.string.profile),
-                        getString(R.string.friends),
+                        //getString(R.string.friends),
                         getString(R.string.settings),
                         getString(R.string.logout),
                 }));
