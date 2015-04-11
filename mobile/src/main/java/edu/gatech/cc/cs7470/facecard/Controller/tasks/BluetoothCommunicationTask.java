@@ -69,17 +69,19 @@ public class BluetoothCommunicationTask {
     public Handler mHandler= new Handler(){
         @Override
         public void handleMessage(Message msg) {
-            // TODO Auto-generated method stub
             Log.i(TAG, "in handler");
             super.handleMessage(msg);
             switch(msg.what){
                 case Constants.SUCCESS_CONNECT:
                     //read and write data from remote device
-                    context.unregisterReceiver(mReceiver);
                     if(connectedThread==null) {
                         connectedThread = new ConnectedThread((BluetoothSocket) msg.obj);
                         connectedThread.start();
+                        String send = "hello";
+                        connectedThread.write(send.getBytes());
                     }
+                    connectThread.cancel();
+                    connectedThread.cancel();
                     Log.d(TAG, "bluetooth connected");
                     break;
                 case Constants.MESSAGE_READ:
@@ -98,7 +100,8 @@ public class BluetoothCommunicationTask {
                     Log.d(TAG, "FaceCards to be sent: ");
                     String send = "hello";
                     connectedThread.write(send.getBytes());
-                    context.unregisterReceiver(mReceiver);
+                    connectedThread.cancel();
+//                    context.unregisterReceiver(mReceiver);
             }
         }
     };
@@ -137,7 +140,7 @@ public class BluetoothCommunicationTask {
 
         }
 
-        unregisterReceiver();
+//        unregisterReceiver();
 
     }
 
@@ -263,6 +266,8 @@ public class BluetoothCommunicationTask {
         /* Call this from the main activity to shutdown the connection */
         public void cancel() {
             try {
+                mmInStream.close();
+                mmOutStream.close();
                 mmSocket.close();
             } catch (IOException e) { }
         }
