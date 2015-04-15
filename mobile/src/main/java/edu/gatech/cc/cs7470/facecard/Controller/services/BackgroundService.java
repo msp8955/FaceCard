@@ -74,7 +74,7 @@ public class BackgroundService extends Service implements OnTaskCompleted {
                     unregisterReceiver(receiver);
                     connectedThread = new ConnectedThread((BluetoothSocket)msg.obj);
                     connectedThread.start();
-
+                    sendFaceCards();
 //                    Toast.makeText(getApplicationContext(), "CONNECTED", 2).show();
 //                    setContentView(R.layout.activity_main);
                     break;
@@ -341,9 +341,17 @@ public class BackgroundService extends Service implements OnTaskCompleted {
             return;
         }
         for(FaceCard card : faceCards) {
-
-//            byte[] sendBuf = (byte[]) msg.obj;
-//            connectedThread.write(sendBuf);
+//            byte[] sendBuf = (byte[]) card.getName().getBytes();
+            try {
+                byte[] sendBuf = card.serialize();
+                Log.d(TAG, "sendBuf size: " + sendBuf.length);
+                connectedThread.write(sendBuf);
+                mHandler.obtainMessage(MESSAGE_READ, sendBuf)
+                        .sendToTarget();
+                Log.d(TAG, card.getBluetoothId() + " facecard sent");
+            }catch(Exception e){
+                Log.d(TAG, "sendFaceCards exception : " + e.getMessage());
+            }
         }
 
     }

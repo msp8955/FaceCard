@@ -3,11 +3,17 @@ package edu.gatech.cc.cs7470.facecard.Model;
 import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 
 /**
  * Created by miseonpark on 3/24/15.
  */
-public class FaceCard implements Parcelable{
+public class FaceCard implements Serializable{
 
     private String bluetoothId, accountId, name, tag;
     private Bitmap profilePicture;
@@ -63,19 +69,19 @@ public class FaceCard implements Parcelable{
 
     public void setProfilePicture(Bitmap profilePicture) { this.profilePicture = profilePicture; }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(bluetoothId);
-        dest.writeString(accountId);
-        dest.writeString(name);
-        dest.writeString(tag);
-        dest.writeValue(profilePicture);
-    }
+//    @Override
+//    public int describeContents() {
+//        return 0;
+//    }
+//
+//    @Override
+//    public void writeToParcel(Parcel dest, int flags) {
+//        dest.writeString(bluetoothId);
+//        dest.writeString(accountId);
+//        dest.writeString(name);
+//        dest.writeString(tag);
+//        dest.writeValue(profilePicture);
+//    }
 
     // this is used to regenerate your object. All Parcelables must have a CREATOR that implements these two methods
     public static final Parcelable.Creator<FaceCard> CREATOR = new Parcelable.Creator<FaceCard>() {
@@ -94,5 +100,13 @@ public class FaceCard implements Parcelable{
         name = in.readString();
         tag = in.readString();
         profilePicture = (Bitmap) in.readValue(Bitmap.class.getClassLoader());
+    }
+
+    public byte[] serialize() throws IOException {
+        Log.d("TAG", "serialize");
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        ObjectOutputStream o = new ObjectOutputStream(b);
+        o.writeObject(this);
+        return b.toByteArray();
     }
 }
