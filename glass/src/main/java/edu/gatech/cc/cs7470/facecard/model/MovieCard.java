@@ -1,4 +1,4 @@
-package edu.gatech.cc.cs7470.facecard.model;
+package edu.gatech.cc.cs7470.facecard.Model;
 
 /**
  * Created by apple on 3/25/15.

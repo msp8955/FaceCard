@@ -2,13 +2,11 @@ package edu.gatech.cc.cs7470.facecard;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -25,14 +23,16 @@ import com.google.android.glass.touchpad.GestureDetector;
 import com.google.android.glass.widget.CardScrollAdapter;
 import com.google.android.glass.widget.CardScrollView;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
 import java.io.OutputStream;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
+
+import edu.gatech.cc.cs7470.facecard.Model.FaceCard;
 
 /**
  * Created by miseonpark on 3/31/15.
@@ -90,7 +90,7 @@ public class FaceCardMainActivity extends Activity {
                     // if connection is built.....
                     case STATE_CONNECTION_STARTED:
                         setContentView(R.layout.face_card_main);
-                        Toast.makeText(getApplicationContext(), "bluetooth connection started", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "bluetooth connection started", Toast.LENGTH_SHORT).show();
                         break;
                     case STATE_CONNECTION_LOST:
                         Toast.makeText(getApplicationContext(), "bluetooth connection lost", Toast.LENGTH_LONG).show();
@@ -105,10 +105,22 @@ public class FaceCardMainActivity extends Activity {
                         break;
                     case READ_FROM_CONNECTION:
                         byte[] readBuf = (byte[]) msg.obj;
-                        int bufferContent = ByteBuffer.wrap(readBuf).getInt();
-                        String string = new String(readBuf);
-                        Log.d(TAG, "bluetooth message read: " + string);
-//                        Toast.makeText(getApplicationContext(), "read from connection: " + string, Toast.LENGTH_LONG).show();
+                        FaceCard faceCard = null;
+                        try{
+                            faceCard = deserialize(readBuf);
+                            Log.d(TAG, "received the card" + faceCard.getName());
+                        } catch(ClassNotFoundException | IOException e){
+                            Log.d(TAG, "deserialize fail " + e.getMessage());
+                            Log.d(TAG, new String(readBuf));
+                        }
+//                        int bufferContent = ByteBuffer.wrap(readBuf).getInt();
+//                        String string = new String(readBuf);
+//                        Log.d(TAG, "bluetooth message read: " + string);
+                        if(faceCard!=null) {
+                            Toast.makeText(getApplicationContext(), "read from connection: " + faceCard.getName(), Toast.LENGTH_SHORT).show();
+                        }else{
+                            Toast.makeText(getApplicationContext(), "reading fail: ", Toast.LENGTH_SHORT).show();
+                        }
                         break;
                     default:
                         break;
@@ -127,43 +139,6 @@ public class FaceCardMainActivity extends Activity {
         // run the "go get em" thread..
         accThread = new AcceptThread();
         accThread.start();
-
-//        initBluetooth();
-//        //check the bluetooth
-//        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-//        if (mBluetoothAdapter == null) {
-//            // Device does not support Bluetooth
-//            Toast toast = Toast.makeText(context, "Bluetooth disabled", Toast.LENGTH_LONG);
-//            toast.show();
-//            finish();
-//        }
-//        else
-//        {
-//            if (!mBluetoothAdapter.isEnabled()) {
-//
-//                Toast toast = Toast.makeText(context, "please turn on your Bluetooth ", Toast.LENGTH_LONG);
-//                toast.show();
-//                //push to the setting view to enable the bluetooth
-//                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-//                startActivityForResult(enableBtIntent, 1);
-//            }
-//            Set<BluetoothDevice> devicesArray = mBluetoothAdapter.getBondedDevices();
-//            // If there are devices
-//            if (devicesArray != null && devicesArray.size() > 0) {
-//                // Loop through paired devices
-//                Toast toast = Toast.makeText(context, "Bluetooth founded!", Toast.LENGTH_LONG);
-//                toast.show();
-//                for (BluetoothDevice device : devicesArray) {
-//                    //add the name of each device to each card
-//                    Card card = new Card(this);
-//                    card.setText(device.getName());
-//                    //add the card to the array list
-//                    mCards.add(card);
-//                    devices.add(device);
-//                }
-//                setupScrollView();
-//            }
-//        }
     }
 
     public void startListening() {
@@ -226,7 +201,8 @@ public class FaceCardMainActivity extends Activity {
 
                     bytes = mmInStream.read(buffer);
                     // Send the obtained bytes to the UI activity
-                    handle.obtainMessage(READ_FROM_CONNECTION, bytes, -1, buffer)
+                    handle.obtainMessage(READ_FROM_CONNECTION, buffer)
+//                    handle.obtainMessage(READ_FROM_CONNECTION, bytes, -1, buffer)
                             .sendToTarget();
                     Log.i(TAG, "message received!");
 
@@ -368,9 +344,6 @@ public class FaceCardMainActivity extends Activity {
         mCardScrollView.setAdapter(adapter);
         mCardScrollView.activate();
         setContentView(mCardScrollView);
-
-//        mBluetoothAdapter.cancelDiscovery();
-//        mBluetoothAdapter.startDiscovery();
     }
 
     private GestureDetector createGestureDetector(final Context context) {
@@ -384,13 +357,6 @@ public class FaceCardMainActivity extends Activity {
                     // do something on tap
                     int index = mCardScrollView.getSelectedItemPosition();
                     Log.d(tag, Integer.toString(index));
-
-//                    if(mBluetoothAdapter.isDiscovering()){
-//                        mBluetoothAdapter.cancelDiscovery();
-//                    }
-//                    BluetoothDevice selectedDevice = devices.get(index);
-//                    ConnectThread connect = new ConnectThread(selectedDevice);
-//                    connect.start();
                     Log.i(tag, "clicked");
                     return true;
                 }
@@ -431,5 +397,11 @@ public class FaceCardMainActivity extends Activity {
             // TODO Auto-generated method stub
             return 0;
         }
+    }
+
+    public static FaceCard deserialize(byte[] bytes) throws IOException, ClassNotFoundException {
+        ByteArrayInputStream b = new ByteArrayInputStream(bytes);
+        ObjectInputStream o = new ObjectInputStream(b);
+        return (FaceCard) o.readObject();
     }
 }
