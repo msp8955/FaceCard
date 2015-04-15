@@ -2,6 +2,7 @@
 <resources>
 
     <string name="app_name">FaceCard</string>
+    <string name="background_service">facecard background service</string>
     <string name="profile">My Profile</string>
     <string name="friends">Friends</string>
     <string name="settings">Settings</string>

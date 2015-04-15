@@ -74,6 +74,25 @@ public class FaceCard implements Parcelable{
         dest.writeString(accountId);
         dest.writeString(name);
         dest.writeString(tag);
-        profilePicture.writeToParcel(dest, flags);
+        dest.writeValue(profilePicture);
+    }
+
+    // this is used to regenerate your object. All Parcelables must have a CREATOR that implements these two methods
+    public static final Parcelable.Creator<FaceCard> CREATOR = new Parcelable.Creator<FaceCard>() {
+        public FaceCard createFromParcel(Parcel in) {
+            return new FaceCard(in);
+        }
+
+        public FaceCard[] newArray(int size) {
+            return new FaceCard[size];
+        }
+    };
+
+    private FaceCard(Parcel in){
+        bluetoothId = in.readString();
+        accountId = in.readString();
+        name = in.readString();
+        tag = in.readString();
+        profilePicture = (Bitmap) in.readValue(Bitmap.class.getClassLoader());
     }
 }
