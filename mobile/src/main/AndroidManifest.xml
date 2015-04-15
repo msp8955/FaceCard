@@ -16,6 +16,11 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+        <service
+            android:name=".Controller.services.BackgroundService"
+            android:label="@string/background_service"
+            android:enabled="true"
+            />
         <activity
             android:name=".View.activities.LoginActivity"
             android:label="Login">

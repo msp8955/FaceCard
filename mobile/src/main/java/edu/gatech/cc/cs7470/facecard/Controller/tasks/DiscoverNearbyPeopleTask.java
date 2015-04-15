@@ -1,6 +1,7 @@
 package edu.gatech.cc.cs7470.facecard.Controller.tasks;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -20,6 +21,8 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import edu.gatech.cc.cs7470.facecard.Constants;
+import edu.gatech.cc.cs7470.facecard.Controller.services.BackgroundService;
+import edu.gatech.cc.cs7470.facecard.Controller.services.OnTaskCompleted;
 import edu.gatech.cc.cs7470.facecard.Model.Bluetooth;
 import edu.gatech.cc.cs7470.facecard.Model.FaceCard;
 import edu.gatech.cc.cs7470.facecard.Model.Profile;
@@ -29,12 +32,15 @@ import edu.gatech.cc.cs7470.facecard.Model.Profile;
  */
 public class DiscoverNearbyPeopleTask extends AsyncTask<String, String, String> {
 
+    private OnTaskCompleted listener;
+
     private static final String TAG = "FaceCard DiscoverNearbyPeopleTask";
     private FaceCard[] faceCards;
     private Context context;
 
-    public DiscoverNearbyPeopleTask(Context c){
+    public DiscoverNearbyPeopleTask(Context c, OnTaskCompleted listener){
         context = c;
+        this.listener = listener;
     }
 
     /* Get Info for Facecard */
@@ -49,6 +55,8 @@ public class DiscoverNearbyPeopleTask extends AsyncTask<String, String, String> 
         rest = rest.replace(" ", "%20");
         Log.d(TAG, rest);
 
+
+
         HttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(Constants.DISCOVER_ACCOUNT_URL + rest);
 
@@ -62,7 +70,6 @@ public class DiscoverNearbyPeopleTask extends AsyncTask<String, String, String> 
             StringBuilder stringBuilder = new StringBuilder();
             String bufferedStrChunk = null;
 
-            int counter = 0;
             while((bufferedStrChunk = bufferedReader.readLine()) != null){
                 stringBuilder.append(bufferedStrChunk + "\n");
             }
@@ -92,6 +99,8 @@ public class DiscoverNearbyPeopleTask extends AsyncTask<String, String, String> 
         } catch (JSONException e){
             Log.d(TAG, e.toString());
         }
+
+
         return "unsuccessful"; //account not found for bluetooth id
     }
 
@@ -99,20 +108,29 @@ public class DiscoverNearbyPeopleTask extends AsyncTask<String, String, String> 
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
 
+        Log.d(TAG, "onPostExecute");
+
         if(result!=null){
             Log.d(TAG, result);
         }
 
+        FaceCard[] faceCardForDebugging = new FaceCard[2];
+        faceCardForDebugging[0] = new FaceCard("btid1", "gmail1", "name1", "tag1");
+        faceCardForDebugging[1] = new FaceCard("btid2", "gmail2", "name2", "tag2");
         if(result.equals("successful") && faceCards!= null && faceCards.length>0){
             Log.d(TAG, "discovered neighbors: " + faceCards.length);
-            BluetoothCommunicationTask task = new BluetoothCommunicationTask(context);
-            task.connectToGlass();
+//            Intent i = new Intent(context, BackgroundService.class);
+//            i.putExtra("FaceCards", faceCards);
+//            context.startService(i);
+
+            listener.onTaskCompleted(faceCards);
+
+
+//            BluetoothCommunicationTask task = new BluetoothCommunicationTask(context);
+////            task.connectToGlass();
 //            task.sendToGlass(faceCards);
+        }else{
+            listener.onTaskCompleted(faceCardForDebugging);
         }
-//        if(result.equals("successful")){
-//            Log.d(TAG, "successful");
-//        }else{
-//            Log.d(TAG, "failed");
-//        }
     }
 }

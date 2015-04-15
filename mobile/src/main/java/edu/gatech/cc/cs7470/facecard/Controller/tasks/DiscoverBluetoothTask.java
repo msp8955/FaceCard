@@ -82,7 +82,7 @@ public class DiscoverBluetoothTask {
                         }
                         i++;
                     }
-                    new DiscoverNearbyPeopleTask(context).execute(stringBuilder.toString());
+//                    new DiscoverNearbyPeopleTask(context).execute(stringBuilder.toString());
 
                 }
             }, SCAN_PERIOD);

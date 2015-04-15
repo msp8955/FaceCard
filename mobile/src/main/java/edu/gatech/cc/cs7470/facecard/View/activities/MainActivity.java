@@ -1,10 +1,13 @@
 package edu.gatech.cc.cs7470.facecard.View.activities;
 
 import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.os.IBinder;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
@@ -20,6 +23,7 @@ import com.google.android.gms.plus.model.people.Person;
 
 import edu.gatech.cc.cs7470.facecard.Constants;
 import edu.gatech.cc.cs7470.facecard.Controller.receivers.BluetoothReceiver;
+import edu.gatech.cc.cs7470.facecard.Controller.services.BackgroundService;
 import edu.gatech.cc.cs7470.facecard.Controller.tasks.BluetoothCommunicationTask;
 import edu.gatech.cc.cs7470.facecard.Controller.tasks.RegisterBluetoothTask;
 import edu.gatech.cc.cs7470.facecard.Controller.utils.BluetoothUtil;
@@ -34,6 +38,8 @@ public class MainActivity extends BaseActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
     private static final String TAG = "FaceCard MainActivity";
+
+    private BackgroundService myServiceBinder;
 
     /**
      * Fragment
@@ -121,6 +127,9 @@ public class MainActivity extends BaseActivity
     protected void onSignedOut() {
         Log.d(TAG, "onSignedOut Start");
         //unregister bluetooth receiver
+//        Intent i = new Intent(getApplicationContext(), BackgroundService.class);
+//        getApplicationContext().stopService(i);
+//        getApplicationContext().unbindService(myConnection);
         BluetoothReceiver alarm = new BluetoothReceiver();
         alarm.cancelAlarm(getApplicationContext());
 
@@ -240,10 +249,13 @@ public class MainActivity extends BaseActivity
                 editor.commit();
 
                 if(!prefs.contains(Constants.SHARED_PREFERENCES_ALARM)){
-                    bluetoothCommunicationTask = new BluetoothCommunicationTask(getApplicationContext());
-                    bluetoothCommunicationTask.connectToGlass();
+//                    bluetoothCommunicationTask = new BluetoothCommunicationTask(getApplicationContext());
+//                    bluetoothCommunicationTask.connectToGlass();
                     //start background service
                     Log.d(TAG, "setting alarm");
+//                    Intent i = new Intent(getApplicationContext(), BackgroundService.class);
+//                    getApplicationContext().startService(i);
+//                    getApplicationContext().bindService(i, myConnection, Context.BIND_AUTO_CREATE);
                     BluetoothReceiver alarm = new BluetoothReceiver();
                     alarm.setAlarm(getApplicationContext());
                     editor.putBoolean(Constants.SHARED_PREFERENCES_ALARM, true);
@@ -264,6 +276,19 @@ public class MainActivity extends BaseActivity
         dialog.show();
 
     }
+
+    public ServiceConnection myConnection = new ServiceConnection() {
+
+        public void onServiceConnected(ComponentName className, IBinder binder) {
+            myServiceBinder = ((BackgroundService.MyBinder) binder).getService();
+            Log.d("ServiceConnection","connected");
+        }
+
+        public void onServiceDisconnected(ComponentName className) {
+            Log.d("ServiceConnection","disconnected");
+            myServiceBinder = null;
+        }
+    };
 
     public boolean signOutFromGplus() {
         if (mGoogleApiClient.isConnected()) {
