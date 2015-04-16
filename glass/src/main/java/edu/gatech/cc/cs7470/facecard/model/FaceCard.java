@@ -109,4 +109,22 @@ public class FaceCard implements Serializable {
         o.writeObject(this);
         return b.toByteArray();
     }
+
+    @Override
+    public boolean equals(Object o) {
+
+        // If the object is compared with itself then return true
+        if (o == this) {
+            return true;
+        }
+
+        /* Check if o is an instance of FaceCard or not */
+        if (!(o instanceof FaceCard)) {
+            return false;
+        }
+
+        // Compare account ID
+        FaceCard c = (FaceCard) o;
+        return this.accountId == c.accountId;
+    }
 }
