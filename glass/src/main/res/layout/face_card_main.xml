@@ -4,13 +4,13 @@
     tools:context=".FaceCardMainService"
     android:orientation="vertical">
 
-
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_weight=".5">
         <ImageView
+            android:id="@+id/one_image"
             android:layout_width="0dp"
             android:layout_height="fill_parent"
             android:layout_weight="0.3"
@@ -25,11 +25,13 @@
             android:paddingLeft="20dp"
             >
             <TextView
+                android:id="@+id/one_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Yuanzhe Fan"
                 android:gravity="center"/>
             <TextView
+                android:id="@+id/one_description"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Stupid Student"

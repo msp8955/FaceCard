@@ -12,11 +12,10 @@
         android:layout_weight="0.5">
 
         <LinearLayout
-
-        android:orientation="vertical"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_weight="2">
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="2">
 
 
         <LinearLayout
@@ -26,6 +25,7 @@
             android:layout_weight=".6">
 
             <ImageView
+                android:id="@+id/four_image_1"
                 android:layout_width="0dp"
                 android:layout_height="fill_parent"
                 android:layout_weight="0.3"
@@ -40,12 +40,14 @@
                 android:paddingLeft="20dp">
 
                 <TextView
+                    android:id="@+id/four_name_1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Thad Starner"
                     android:textSize="15dp"
                     android:gravity="center"/>
                 <TextView
+                    android:id="@+id/four_description_1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Professor"
@@ -56,6 +58,7 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/four_note_1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight=".4"
@@ -80,6 +83,7 @@
                 android:layout_weight=".6">
 
                 <ImageView
+                    android:id="@+id/four_image_2"
                     android:layout_width="0dp"
                     android:layout_height="fill_parent"
                     android:layout_weight="0.3"
@@ -94,12 +98,14 @@
                     android:paddingLeft="20dp">
 
                     <TextView
+                        android:id="@+id/four_name_2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="John Stasko"
                         android:textSize="15dp"
                         android:gravity="center"/>
                     <TextView
+                        android:id="@+id/four_description_2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Professor"
@@ -110,6 +116,7 @@
             </LinearLayout>
 
             <TextView
+                android:id="@+id/four_note_2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight=".4"
@@ -146,6 +153,7 @@
                 android:layout_weight=".6">
 
                 <ImageView
+                    android:id="@+id/four_image_3"
                     android:layout_width="0dp"
                     android:layout_height="fill_parent"
                     android:layout_weight="0.3"
@@ -160,12 +168,14 @@
                     android:paddingLeft="20dp">
 
                     <TextView
+                        android:id="@+id/four_name_3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Peter Anderson"
                         android:textSize="15dp"
                         android:gravity="center"/>
                     <TextView
+                        android:id="@+id/four_description_3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="CS Student"
@@ -176,6 +186,7 @@
             </LinearLayout>
 
             <TextView
+                android:id="@+id/four_note_3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight=".4"
@@ -200,6 +211,7 @@
                 android:layout_weight=".6">
 
                 <ImageView
+                    android:id="@+id/four_image_4"
                     android:layout_width="0dp"
                     android:layout_height="fill_parent"
                     android:layout_weight="0.3"
@@ -214,12 +226,14 @@
                     android:paddingLeft="20dp">
 
                     <TextView
+                        android:id="@+id/four_name_4"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Weiren Wang"
                         android:textSize="15dp"
                         android:gravity="center"/>
                     <TextView
+                        android:id="@+id/four_description_4"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Phd Student"
@@ -230,6 +244,7 @@
             </LinearLayout>
 
             <TextView
+                android:id="@+id/four_note_4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight=".4"
