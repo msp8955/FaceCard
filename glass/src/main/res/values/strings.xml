@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">FaceCard</string>
-    <string name="title_activity_face_card_main_service">FaceCard Main</string>
+    <string name="app_name">Face Card</string>
+    <string name="title_activity_face_card_main_service">Face Card Main</string>
     <string name="action_stop">Stop</string>
-    <string name="hello_world">Hello world!</string>
 
 </resources>
