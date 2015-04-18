@@ -1,4 +1,4 @@
-package edu.gatech.cc.cs7470.facecard;
+package edu.gatech.cc.cs7470.facecard.View;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -15,6 +15,8 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.glass.app.Card;
@@ -33,42 +35,71 @@ import java.util.List;
 import java.util.UUID;
 
 import edu.gatech.cc.cs7470.facecard.Model.FaceCard;
+import edu.gatech.cc.cs7470.facecard.R;
 
 /**
  * Created by miseonpark on 3/31/15.
  */
 public class FaceCardMainActivity extends Activity {
 
-    String tag = "Glass Main Activity";
+    String TAG = "Glass Main Activity";
 
+    /* variables for UI */
     private List<Card> mCards;
     private CardScrollView mCardScrollView;
     GestureDetector mGestureDetector;
+    private ArrayList<FaceCard> faceCards;
+    public static final int UI_STATE_DEFAULT = 0;
+    public static final int UI_STATE_FOUR = 1;
+    public static final int UI_STATE_EIGHT = 2;
+    public static final int MAX_FACE_CARD = 8;
+    private int CURRENT_UI_STATE=0;
 
+    /* variables for One Card UI */
+    private ImageView one_image;
+    private TextView one_name;
+    private TextView one_description;
+    private TextView one_note;
+
+    /* variables for Four Card UI */
+    private ImageView four_image_1;
+    private TextView four_name_1;
+    private TextView four_description_1;
+    private TextView four_note_1;
+    private ImageView four_image_2;
+    private TextView four_name_2;
+    private TextView four_description_2;
+    private TextView four_note_2;
+    private ImageView four_image_3;
+    private TextView four_name_3;
+    private TextView four_description_3;
+    private TextView four_note_3;
+    private ImageView four_image_4;
+    private TextView four_name_4;
+    private TextView four_description_4;
+    private TextView four_note_4;
+
+    /* variables for Eight Card UI */
+
+
+    /* variables for Bluetooth connection */
     public static String msgToSend;
     public static final int STATE_CONNECTION_STARTED = 0;
     public static final int STATE_CONNECTION_LOST = 1;
     public static final int READY_TO_CONN = 2;
     public static final int READ_FROM_CONNECTION = 3;
-
-    ConnectedThread mConnectedThread;
-    BluetoothAdapter mBluetoothAdapter;
-    public String TAG = "log";
-    public String NAME =" BLE";
-    Handler handle;
-
-    ArrayList<BluetoothSocket> mSockets = new ArrayList<BluetoothSocket>();
+    private ConnectedThread mConnectedThread;
+    private BluetoothAdapter mBluetoothAdapter;
+    public final String NAME =" BLE";
+    private Handler handler;
+    private ArrayList<BluetoothSocket> mSockets = new ArrayList<BluetoothSocket>();
     // list of addresses for devices we've connected to
-    ArrayList<String> mDeviceAddresses = new ArrayList<String>();
-
-    // We can handle up to 7 connections... or something...
-    UUID[] uuids = new UUID[2];
-    // some uuid's we like to use..
-    String uuid1 = "00001101-0000-1000-8000-00805F9B34FB";
-    String uuid2 = "c2911cd0-5c3c-11e3-949a-0800200c9a66";
-
-    int REQUEST_ENABLE_BT = 1;
-    AcceptThread accThread;
+    private ArrayList<String> mDeviceAddresses = new ArrayList<String>();
+    private UUID[] uuids = new UUID[2];
+    private final String uuid1 = "00001101-0000-1000-8000-00805F9B34FB";
+    private final String uuid2 = "c2911cd0-5c3c-11e3-949a-0800200c9a66";
+    private int REQUEST_ENABLE_BT = 1;
+    private AcceptThread accThread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,11 +109,12 @@ public class FaceCardMainActivity extends Activity {
         //initialize an array list of card object, which works the same as the list view..
         mCards = new ArrayList<Card>();
         mGestureDetector = this.createGestureDetector(this);
+        faceCards = new ArrayList<FaceCard>();
 
         uuids[0] = UUID.fromString(uuid1);
         uuids[1] = UUID.fromString(uuid2);
 
-        handle = new Handler(Looper.getMainLooper()) {
+        handler = new Handler(Looper.getMainLooper()) {
 
             @Override
             public void handleMessage(Message msg) {
@@ -111,15 +143,9 @@ public class FaceCardMainActivity extends Activity {
                             Log.d(TAG, "received the card" + faceCard.getName());
                         } catch(ClassNotFoundException | IOException e){
                             Log.d(TAG, "deserialize fail " + e.getMessage());
-                            Log.d(TAG, new String(readBuf));
                         }
-//                        int bufferContent = ByteBuffer.wrap(readBuf).getInt();
-//                        String string = new String(readBuf);
-//                        Log.d(TAG, "bluetooth message read: " + string);
                         if(faceCard!=null) {
                             Toast.makeText(getApplicationContext(), "read from connection: " + faceCard.getName(), Toast.LENGTH_SHORT).show();
-                        }else{
-                            Toast.makeText(getApplicationContext(), "reading fail: ", Toast.LENGTH_SHORT).show();
                         }
                         break;
                     default:
@@ -131,7 +157,7 @@ public class FaceCardMainActivity extends Activity {
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         Card card = new Card(getApplicationContext());
-        card.setText("waiting for bluetooth connection");
+        card.setText("searching for nearby people");
         //add the card to the array list
         mCards.add(card);
         setupScrollView();
@@ -139,6 +165,26 @@ public class FaceCardMainActivity extends Activity {
         // run the "go get em" thread..
         accThread = new AcceptThread();
         accThread.start();
+    }
+
+    private void addCardToUI(FaceCard faceCard){
+        boolean doesExist = false;
+        for(FaceCard card : faceCards){
+            if(card.equals(faceCard)){
+                doesExist = true;
+            }
+        }
+        if(!doesExist){
+            //only add if it doesn't exist
+            faceCards.add(faceCard);
+            updateUI();
+        }
+
+    }
+
+    /* update glass UI upon receiving new face card */
+    private void updateUI(){
+
     }
 
     public void startListening() {
@@ -201,8 +247,8 @@ public class FaceCardMainActivity extends Activity {
 
                     bytes = mmInStream.read(buffer);
                     // Send the obtained bytes to the UI activity
-                    handle.obtainMessage(READ_FROM_CONNECTION, buffer)
-//                    handle.obtainMessage(READ_FROM_CONNECTION, bytes, -1, buffer)
+                    handler.obtainMessage(READ_FROM_CONNECTION, buffer)
+//                    handler.obtainMessage(READ_FROM_CONNECTION, bytes, -1, buffer)
                             .sendToTarget();
                     Log.i(TAG, "message received!");
 
@@ -214,8 +260,8 @@ public class FaceCardMainActivity extends Activity {
         }
 
         public void connectionLost() {
-            Message msg = handle.obtainMessage(STATE_CONNECTION_LOST);
-            handle.sendMessage(msg);
+            Message msg = handler.obtainMessage(STATE_CONNECTION_LOST);
+            handler.sendMessage(msg);
         }
 
         /**
@@ -238,8 +284,8 @@ public class FaceCardMainActivity extends Activity {
         public void cancel() {
             try {
                 mmSocket.close();
-                Message msg = handle.obtainMessage(READY_TO_CONN);
-                handle.sendMessage(msg);
+                Message msg = handler.obtainMessage(READY_TO_CONN);
+                handler.sendMessage(msg);
             } catch (IOException e) {
                 Log.e(TAG, "close() of connect socket failed", e);
             }
@@ -297,8 +343,8 @@ public class FaceCardMainActivity extends Activity {
         public void cancel() {
             try {
                 mmServerSocket.close();
-                Message msg = handle.obtainMessage(READY_TO_CONN);
-                handle.sendMessage(msg);
+                Message msg = handler.obtainMessage(READY_TO_CONN);
+                handler.sendMessage(msg);
 
             } catch (IOException e) {
             }
@@ -316,11 +362,11 @@ public class FaceCardMainActivity extends Activity {
             devs += sock.getRemoteDevice().getName() + "\n";
         }
         // pass it to the pool....
-        Message msg = handle.obtainMessage(STATE_CONNECTION_STARTED);
+        Message msg = handler.obtainMessage(STATE_CONNECTION_STARTED);
         Bundle bundle = new Bundle();
         bundle.putString("NAMES", devs);
         msg.setData(bundle);
-        handle.sendMessage(msg);
+        handler.sendMessage(msg);
     }
 
 //    @Override
@@ -356,8 +402,8 @@ public class FaceCardMainActivity extends Activity {
                 if (gesture == Gesture.TAP) {
                     // do something on tap
                     int index = mCardScrollView.getSelectedItemPosition();
-                    Log.d(tag, Integer.toString(index));
-                    Log.i(tag, "clicked");
+                    Log.d(TAG, Integer.toString(index));
+                    Log.i(TAG, "clicked");
                     return true;
                 }
                 return false;
