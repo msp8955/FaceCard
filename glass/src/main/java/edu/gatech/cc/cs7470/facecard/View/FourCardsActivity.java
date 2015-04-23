@@ -68,12 +68,13 @@ public class FourCardsActivity extends BaseActivity {
     @Override
     public void setupCard() {
         mCards = new ArrayList<CardBuilder>();
-
+        int counter = 0;
         for(int i=0; i<faceCards.size()/4; i++){
             FaceCard[] fourCards = new FaceCard[4];
             for(int j=0; j<4; j++){
                 //add facecards
-                fourCards[j] = faceCards.get(i*4+j);
+                fourCards[j] = faceCards.get(counter);
+                counter++;
             }
             addCards(fourCards);
         }
@@ -82,11 +83,12 @@ public class FourCardsActivity extends BaseActivity {
             for (int i = 0; i < 4; i++) {
                 if (i < faceCards.size() % 4) {
                     //add facecards
-                    //TODO
-//                fourCards[i] = faceCards.get(i*4+j);
+                    fourCards[i] = faceCards.get(counter);
                 }else{
+                    //TODO
                     //add empty cards
                 }
+                counter++;
             }
             addCards(fourCards);
         }
