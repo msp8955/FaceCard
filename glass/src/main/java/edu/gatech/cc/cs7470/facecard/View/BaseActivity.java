@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -15,8 +16,6 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.glass.app.Card;
@@ -34,53 +33,27 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import edu.gatech.cc.cs7470.facecard.FaceCardMainActivity;
+import edu.gatech.cc.cs7470.facecard.FaceCardScrollAdapter;
 import edu.gatech.cc.cs7470.facecard.Model.FaceCard;
 import edu.gatech.cc.cs7470.facecard.R;
 
 /**
- * Created by miseonpark on 3/31/15.
+ * Created by miseonpark on 4/23/15.
  */
-public class FaceCardMainActivity extends Activity {
+public abstract class BaseActivity extends Activity {
 
-    String TAG = "Glass Main Activity";
+    private static final String TAG = "BaseActivity";
 
-    /* variables for UI */
+    protected static ArrayList<FaceCard> faceCards;
     private List<Card> mCards;
     private CardScrollView mCardScrollView;
-    GestureDetector mGestureDetector;
-    private ArrayList<FaceCard> faceCards;
+    private GestureDetector mGestureDetector;
     public static final int UI_STATE_DEFAULT = 0;
     public static final int UI_STATE_FOUR = 1;
     public static final int UI_STATE_EIGHT = 2;
     public static final int MAX_FACE_CARD = 8;
-    private int CURRENT_UI_STATE=0;
-
-    /* variables for One Card UI */
-    private ImageView one_image;
-    private TextView one_name;
-    private TextView one_description;
-    private TextView one_note;
-
-    /* variables for Four Card UI */
-    private ImageView four_image_1;
-    private TextView four_name_1;
-    private TextView four_description_1;
-    private TextView four_note_1;
-    private ImageView four_image_2;
-    private TextView four_name_2;
-    private TextView four_description_2;
-    private TextView four_note_2;
-    private ImageView four_image_3;
-    private TextView four_name_3;
-    private TextView four_description_3;
-    private TextView four_note_3;
-    private ImageView four_image_4;
-    private TextView four_name_4;
-    private TextView four_description_4;
-    private TextView four_note_4;
-
-    /* variables for Eight Card UI */
-
+    private static int CURRENT_UI_STATE=0;
 
     /* variables for Bluetooth connection */
     public static String msgToSend;
@@ -141,6 +114,11 @@ public class FaceCardMainActivity extends Activity {
                         try{
                             faceCard = deserialize(readBuf);
                             Log.d(TAG, "received the card" + faceCard.getName());
+                            if(!faceCards.contains(faceCard)){
+                                faceCards.add(faceCard);
+                                Log.d(TAG, "added card to list");
+                                addCard(faceCard);
+                            }
                         } catch(ClassNotFoundException | IOException e){
                             Log.d(TAG, "deserialize fail " + e.getMessage());
                         }
@@ -156,36 +134,20 @@ public class FaceCardMainActivity extends Activity {
         };
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-        Card card = new Card(getApplicationContext());
-        card.setText("searching for nearby people");
-        //add the card to the array list
-        mCards.add(card);
-        setupScrollView();
+//        Card card = new Card(getApplicationContext());
+//        card.setText("searching for nearby people");
+//        //add the card to the array list
+//        mCards.add(card);
+//        setupScrollView();
 
         // run the "go get em" thread..
         accThread = new AcceptThread();
         accThread.start();
     }
 
-    private void addCardToUI(FaceCard faceCard){
-        boolean doesExist = false;
-        for(FaceCard card : faceCards){
-            if(card.equals(faceCard)){
-                doesExist = true;
-            }
-        }
-        if(!doesExist){
-            //only add if it doesn't exist
-            faceCards.add(faceCard);
-            updateUI();
-        }
+    public abstract void setupCard();
+    public abstract void addCard(FaceCard faceCard);
 
-    }
-
-    /* update glass UI upon receiving new face card */
-    private void updateUI(){
-
-    }
 
     public void startListening() {
         if (accThread != null) {
@@ -386,7 +348,27 @@ public class FaceCardMainActivity extends Activity {
             }
         };
 
-        ExampleCardScrollAdapter adapter = new ExampleCardScrollAdapter();
+        List<FaceCard[]> faceCardsToSend = new ArrayList<FaceCard[]>();
+        int div = 0;
+        switch(CURRENT_UI_STATE){
+            case UI_STATE_DEFAULT: div = 1; break;
+            case UI_STATE_FOUR: div = 4; break;
+            case UI_STATE_EIGHT: div = 8; break;
+        }
+        for(int i=0; i<MAX_FACE_CARD/div; i++){
+            FaceCard[] cards = new FaceCard[div];
+            for(int j=0; j<div; j++){
+                try {
+                    cards[j]=faceCards.get(i*div+j);
+                }catch(Exception e){
+                    Bitmap.Config conf = Bitmap.Config.ARGB_8888;
+                    cards[j]= new FaceCard("","","","",Bitmap.createBitmap(100, 100, conf));
+                }
+            }
+            faceCardsToSend.add(cards);
+        }
+
+        FaceCardScrollAdapter adapter = new FaceCardScrollAdapter(this, faceCardsToSend, CURRENT_UI_STATE);
         mCardScrollView.setAdapter(adapter);
         mCardScrollView.activate();
         setContentView(mCardScrollView);
@@ -450,4 +432,5 @@ public class FaceCardMainActivity extends Activity {
         ObjectInputStream o = new ObjectInputStream(b);
         return (FaceCard) o.readObject();
     }
+
 }

@@ -46,6 +46,7 @@ public class RegisterBluetoothTask extends AsyncTask<String, String, String> {
         rest = rest.replace(" ", "%20");
         Log.d(TAG, rest);
 
+        /*
         HttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(Constants.REGISTER_ACCOUNT_URL + rest);
 
@@ -72,7 +73,7 @@ public class RegisterBluetoothTask extends AsyncTask<String, String, String> {
         } catch (IOException e) {
             Log.d(TAG, e.toString());
         }
-
+        */
         return null;
     }
 

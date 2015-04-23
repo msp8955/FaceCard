@@ -1,4 +1,4 @@
-package edu.gatech.cc.cs7470.facecard.View;
+package edu.gatech.cc.cs7470.facecard;
 
 import android.content.Context;
 import android.view.View;
@@ -40,7 +40,11 @@ public class FaceCardScrollAdapter extends CardScrollAdapter {
 
     @Override
     public int getCount() {
-        return (cards.size()+current_ui_state-1)/current_ui_state;
+        try {
+            return (cards.size() + current_ui_state - 1) / current_ui_state;
+        }catch(Exception e){
+            return 0;
+        }
     }
 
     @Override

@@ -2,6 +2,7 @@ package edu.gatech.cc.cs7470.facecard.Controller.tasks;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -56,7 +57,7 @@ public class DiscoverNearbyPeopleTask extends AsyncTask<String, String, String> 
         Log.d(TAG, rest);
 
 
-
+        /*
         HttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(Constants.DISCOVER_ACCOUNT_URL + rest);
 
@@ -99,7 +100,7 @@ public class DiscoverNearbyPeopleTask extends AsyncTask<String, String, String> 
         } catch (JSONException e){
             Log.d(TAG, e.toString());
         }
-
+        */
 
         return "unsuccessful"; //account not found for bluetooth id
     }
@@ -114,9 +115,10 @@ public class DiscoverNearbyPeopleTask extends AsyncTask<String, String, String> 
             Log.d(TAG, result);
         }
 
-        FaceCard[] faceCardForDebugging = new FaceCard[2];
-        faceCardForDebugging[0] = new FaceCard("btid1", "gmail1", "name1", "tag1");
-        faceCardForDebugging[1] = new FaceCard("btid2", "gmail2", "name2", "tag2");
+        FaceCard[] faceCardForDebugging = new FaceCard[1];
+        Bitmap.Config conf = Bitmap.Config.ARGB_8888;
+        faceCardForDebugging[0] = new FaceCard("btid1", "gmail1", "name1", "tag1", Bitmap.createBitmap(100, 100, conf));
+//        faceCardForDebugging[1] = new FaceCard("btid2", "gmail2", "name2", "tag2");
         if(result.equals("successful") && faceCards!= null && faceCards.length>0){
             Log.d(TAG, "discovered neighbors: " + faceCards.length);
 //            Intent i = new Intent(context, BackgroundService.class);
