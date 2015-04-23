@@ -8,6 +8,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -77,12 +78,20 @@ public abstract class BaseActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.face_card_main);
+//        setContentView(R.layout.face_card_main);
 
         //initialize an array list of card object, which works the same as the list view..
         mCards = new ArrayList<Card>();
         mGestureDetector = this.createGestureDetector(this);
         faceCards = new ArrayList<FaceCard>();
+
+        Bitmap icon = BitmapFactory.decodeResource(getResources(),
+                R.drawable.profile_picture_default);
+        faceCards.add(new FaceCard("bluetooth id 1", "first@gmail.com", "Amanda", "my tag1", icon));
+        faceCards.add(new FaceCard("bluetooth id 2", "second@gmail.com", "Ben", "my tag2", icon));
+        faceCards.add(new FaceCard("bluetooth id 3", "third@gmail.com", "Chris", "my tag3", icon));
+        faceCards.add(new FaceCard("bluetooth id 4", "fourth@gmail.com", "David", "my tag4", icon));
+        faceCards.add(new FaceCard("bluetooth id 5", "fifth@gmail.com", "Emily", "my tag5", icon));
 
         uuids[0] = UUID.fromString(uuid1);
         uuids[1] = UUID.fromString(uuid2);

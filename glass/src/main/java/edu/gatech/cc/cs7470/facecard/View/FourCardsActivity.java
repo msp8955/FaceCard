@@ -9,16 +9,21 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.google.android.glass.media.Sounds;
 import com.google.android.glass.touchpad.Gesture;
 import com.google.android.glass.touchpad.GestureDetector;
 import com.google.android.glass.widget.CardBuilder;
+import com.google.android.glass.widget.CardScrollAdapter;
+import com.google.android.glass.widget.CardScrollView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +42,9 @@ public class FourCardsActivity extends BaseActivity {
 
     private List<CardBuilder> mCards;
 
+    private CardScrollView mCardScrollView;
+    private FourCardScrollAdapter mAdapter;
+
     private ListView listView;
     private TextView first_name;
     //ImageView of four cards
@@ -48,21 +56,28 @@ public class FourCardsActivity extends BaseActivity {
 
     private GestureDetector mGestureDetector;
 
-
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.grid_four_views);
+//        setContentView(R.layout.grid_four_views);
+
+        setupCard();
+
+        mCardScrollView = new CardScrollView(this);
+        mAdapter = new FourCardScrollAdapter();
+        mCardScrollView.setAdapter(mAdapter);
+        mCardScrollView.activate();
 
         //adapter = new ArrayAdapter(this, CardScrollActivity.class);
         mGestureDetector = createGestureDetector(this);
 
 //        first_name = (TextView) findViewById(R.id.first_name);
 //        first_name.setText("Changed Name");
-        firstcard_pic = (ImageView) findViewById(R.id.four_image_1);
+//        firstcard_pic = (ImageView) findViewById(R.id.four_image_1);
         //firstcard_pic.setImageBitmap();
 
 //        setupClickListener();
         //setContentView(listView);
+        setContentView(mCardScrollView);
     }
 
     @Override
@@ -75,6 +90,7 @@ public class FourCardsActivity extends BaseActivity {
                 //add facecards
                 fourCards[j] = faceCards.get(counter);
                 counter++;
+                Log.d("facecard", counter + "");
             }
             addCards(fourCards);
         }
@@ -87,13 +103,13 @@ public class FourCardsActivity extends BaseActivity {
                 }else{
                     //TODO
                     //add empty cards
+                    fourCards[i] = new FaceCard("","","","");
                 }
+                Log.d("facecard", counter + "");
                 counter++;
             }
             addCards(fourCards);
         }
-
-
 
     }
 
@@ -140,7 +156,11 @@ public class FourCardsActivity extends BaseActivity {
         four_note_4.setText(fourCards[3].getTag());
 
         mCards.add(cb);
-
+        Log.d("facecard", "adding cb");
+        mCards.add(new CardBuilder(this, CardBuilder.Layout.TEXT)
+                .setText("Version1.1 @FaceCard")
+                .setFootnote("Swiping Cards"));
+        Log.d("facecard", "adding default");
     }
 
     @Override
@@ -215,6 +235,43 @@ public class FourCardsActivity extends BaseActivity {
             return mGestureDetector.onMotionEvent(event);
         }
         return false;
+    }
+
+    private class FourCardScrollAdapter extends CardScrollAdapter {
+
+        @Override
+        public int getPosition(Object item) {
+            return mCards.indexOf(item);
+        }
+
+        @Override
+        public int getCount() {
+            return mCards.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return mCards.get(position);
+        }
+
+        @Override
+        public int getViewTypeCount() {
+            return CardBuilder.getViewTypeCount();
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            return mCards.get(position).getItemViewType();
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            return mCards.get(position).getView(convertView, parent);
+        }
+        public void insertCardWithoutNotification(int position, CardBuilder card) {
+            mCards.add(position, card);
+        }
+
     }
 
     protected void onStart() {
