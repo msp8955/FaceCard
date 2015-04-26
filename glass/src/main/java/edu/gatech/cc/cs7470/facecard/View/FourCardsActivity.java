@@ -93,8 +93,6 @@ public class FourCardsActivity extends BaseActivity {
             addCards(fourCards);
         }
 
-
-
     }
 
     private void addCards(FaceCard[] fourCards){

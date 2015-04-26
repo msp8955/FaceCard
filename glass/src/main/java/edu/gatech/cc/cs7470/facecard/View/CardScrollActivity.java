@@ -61,7 +61,7 @@ public class CardScrollActivity extends BaseActivity {
                 .setText("Version1.1 @FaceCard")
                 .setFootnote("Swiping Cards"));
 
-        for(FaceCard fc : faceCards){
+        for(FaceCard fc : faceCards) {
             mCards.add(new CardBuilder(this, CardBuilder.Layout.AUTHOR)
                     .setText(fc.getTag())
                     .setIcon(fc.getProfilePicture())
@@ -79,7 +79,6 @@ public class CardScrollActivity extends BaseActivity {
                 .setHeading(faceCard.getName())
                 .setSubheading(faceCard.getAccountId())
                 .setTimestamp("just now"));
-
     }
 
     private void setupClickListener() {
