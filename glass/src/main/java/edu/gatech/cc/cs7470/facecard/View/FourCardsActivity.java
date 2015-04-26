@@ -38,28 +38,14 @@ import edu.gatech.cc.cs7470.facecard.R;
 
 public class FourCardsActivity extends BaseActivity {
 
-    private ArrayAdapter adapter;
-
-    private List<CardBuilder> mCards;
+    private List<View> mCards;
 
     private CardScrollView mCardScrollView;
     private FourCardScrollAdapter mAdapter;
-
-    private ListView listView;
-    private TextView first_name;
-    //ImageView of four cards
-    private ImageView firstcard_pic;
-    private ImageView secondcard_pic;
-    private ImageView thirdcard_pic;
-    private ImageView fourthcard_pic;
-
-
     private GestureDetector mGestureDetector;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        setContentView(R.layout.grid_four_views);
-
         setupCard();
 
         mCardScrollView = new CardScrollView(this);
@@ -69,20 +55,12 @@ public class FourCardsActivity extends BaseActivity {
 
         //adapter = new ArrayAdapter(this, CardScrollActivity.class);
         mGestureDetector = createGestureDetector(this);
-
-//        first_name = (TextView) findViewById(R.id.first_name);
-//        first_name.setText("Changed Name");
-//        firstcard_pic = (ImageView) findViewById(R.id.four_image_1);
-        //firstcard_pic.setImageBitmap();
-
-//        setupClickListener();
-        //setContentView(listView);
         setContentView(mCardScrollView);
     }
 
     @Override
     public void setupCard() {
-        mCards = new ArrayList<CardBuilder>();
+        mCards = new ArrayList<View>();
         int counter = 0;
         for(int i=0; i<faceCards.size()/4; i++){
             FaceCard[] fourCards = new FaceCard[4];
@@ -155,12 +133,7 @@ public class FourCardsActivity extends BaseActivity {
         TextView four_note_4 = (TextView) view.findViewById(R.id.four_note_4);
         four_note_4.setText(fourCards[3].getTag());
 
-        mCards.add(cb);
-        Log.d("facecard", "adding cb");
-        mCards.add(new CardBuilder(this, CardBuilder.Layout.TEXT)
-                .setText("Version1.1 @FaceCard")
-                .setFootnote("Swiping Cards"));
-        Log.d("facecard", "adding default");
+        mCards.add(view);
     }
 
     @Override
@@ -214,21 +187,6 @@ public class FourCardsActivity extends BaseActivity {
         return gestureDetector;
     }
 
-
-    private void setupClickListener() {
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.d("test", "click2");
-                AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-                am.playSoundEffect(Sounds.TAP);
-                finish();
-                Intent intent = new Intent(getApplicationContext(), EightCardsActivity.class);
-                startActivity(intent);
-            }
-        });
-    }
-
     @Override
     public boolean onGenericMotionEvent(MotionEvent event) {
         if (mGestureDetector != null) {
@@ -259,18 +217,19 @@ public class FourCardsActivity extends BaseActivity {
             return CardBuilder.getViewTypeCount();
         }
 
-        @Override
-        public int getItemViewType(int position) {
-            return mCards.get(position).getItemViewType();
-        }
+//        @Override
+//        public int getItemViewType(int position) {
+//            return mCards.get(position).getItemViewType();
+//        }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            return mCards.get(position).getView(convertView, parent);
+//            return mCards.get(position).getView(convertView, parent);
+            return mCards.get(position);
         }
-        public void insertCardWithoutNotification(int position, CardBuilder card) {
-            mCards.add(position, card);
-        }
+//        public void insertCardWithoutNotification(int position, CardBuilder card) {
+//            mCards.add(position, card);
+//        }
 
     }
 

@@ -62,12 +62,16 @@ public class CardScrollActivity extends BaseActivity {
                 .setFootnote("Swiping Cards"));
 
         for(FaceCard fc : faceCards){
-            mCards.add(new CardBuilder(this, CardBuilder.Layout.AUTHOR)
-                    .setText(fc.getTag())
-                    .setIcon(fc.getProfilePicture())
-                    .setHeading(fc.getName())
-                    .setSubheading(fc.getAccountId())
-                    .setTimestamp("just now"));
+//            mCards.add(new CardBuilder(this, CardBuilder.Layout.AUTHOR)
+//                    .setText(fc.getTag())
+//                    .setIcon(fc.getProfilePicture())
+//                    .setHeading(fc.getName())
+//                    .setSubheading(fc.getAccountId())
+//                    .setTimestamp("just now"));
+            mCards.add(new CardBuilder(this, CardBuilder.Layout.ALERT)
+                .setIcon(fc.getProfilePicture())
+                .setText(fc.getName())
+                .setFootnote(fc.getTag()));
         }
     }
 
