@@ -44,6 +44,7 @@ public class BackgroundService extends Service implements OnTaskCompleted {
 
     private Context context;
     private FaceCard[] faceCards;
+    private HashSet<String> bluetoothIdSet;
 
     private Messenger messenger;
 
@@ -119,6 +120,8 @@ public class BackgroundService extends Service implements OnTaskCompleted {
     @Override
     public int onStartCommand (Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
+
+        bluetoothIdSet = new HashSet<>();
 
         Bundle extras=intent.getExtras();
         messenger=(Messenger)extras.get(EXTRA_MESSENGER);
@@ -409,13 +412,15 @@ public class BackgroundService extends Service implements OnTaskCompleted {
                     int i=0;
                     for(String bt : btDeviceList){
                         if(isDemo){
-                            Message msg=Message.obtain();
-                            msg.obj = bt;
-                            try {
-                                messenger.send(msg);
-                            }
-                            catch (android.os.RemoteException e1) {
-                                Log.w(getClass().getName(), "Exception sending message", e1);
+                            if(!bluetoothIdSet.contains(bt)) {
+                                Message msg = Message.obtain();
+                                msg.obj = bt;
+                                try {
+                                    messenger.send(msg);
+                                } catch (android.os.RemoteException e1) {
+                                    Log.w(getClass().getName(), "Exception sending message", e1);
+                                }
+                                bluetoothIdSet.add(bt);
                             }
                         }
                         if(i+1<btDeviceList.size()){
@@ -425,7 +430,9 @@ public class BackgroundService extends Service implements OnTaskCompleted {
                         }
                         i++;
                     }
-                    new DiscoverNearbyPeopleTask(context, BackgroundService.this).execute(stringBuilder.toString());
+                    if(!isDemo) {
+                        new DiscoverNearbyPeopleTask(context, BackgroundService.this, isDemo).execute(stringBuilder.toString());
+                    }
 
                 }
             }, SCAN_PERIOD);

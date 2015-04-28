@@ -36,7 +36,11 @@ import java.io.InputStream;
 import edu.gatech.cc.cs7470.facecard.Constants;
 import edu.gatech.cc.cs7470.facecard.Controller.receivers.BluetoothReceiver;
 import edu.gatech.cc.cs7470.facecard.Controller.services.BackgroundService;
+import edu.gatech.cc.cs7470.facecard.Controller.services.OnTaskCompleted;
+import edu.gatech.cc.cs7470.facecard.Controller.tasks.BluetoothCommunicationTask;
+import edu.gatech.cc.cs7470.facecard.Controller.tasks.DiscoverNearbyPeopleTask;
 import edu.gatech.cc.cs7470.facecard.Controller.utils.BluetoothUtil;
+import edu.gatech.cc.cs7470.facecard.Model.FaceCard;
 import edu.gatech.cc.cs7470.facecard.Model.Profile;
 import edu.gatech.cc.cs7470.facecard.R;
 import edu.gatech.cc.cs7470.facecard.View.activities.MainActivity;
@@ -45,7 +49,7 @@ import edu.gatech.cc.cs7470.facecard.View.uihelpers.RoundImageHelper;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainFragment extends Fragment {
+public class MainFragment extends Fragment implements OnTaskCompleted{
 
     private static String TAG = "PlaceholderFragment";
 
@@ -64,7 +68,7 @@ public class MainFragment extends Fragment {
     private ToggleButton toggle_update;
     private ToggleButton toggle_demo;
     private TextView tv_device_detected;
-
+    private BluetoothCommunicationTask bluetoothCommunicationTask;
 
     //links
     private TextView tv_google_link;
@@ -74,9 +78,28 @@ public class MainFragment extends Fragment {
     private Handler handler=new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            Toast.makeText(activity, (String)msg.obj, Toast.LENGTH_SHORT).show();
+            String btid = (String)msg.obj;
+            new DiscoverNearbyPeopleTask(activity.getApplicationContext(), MainFragment.this, true).execute(btid);
+            if(tv_device_detected.getText().length()==0){
+                tv_device_detected.setText(btid);
+            }else {
+                tv_device_detected.setText(tv_device_detected.getTag() + ", " + btid);
+            }
+            Toast.makeText(activity, btid, Toast.LENGTH_SHORT).show();
         }
     };
+
+    @Override
+    public void onTaskCompleted(FaceCard[] result){
+        Log.d(TAG, "onTaskCompleted");
+        if(result!=null){
+            for (FaceCard card : result){
+                Log.d(TAG, "card: " + card.getName());
+            }
+            bluetoothCommunicationTask.sendToGlass(result);
+//            connectToGlass();
+        }
+    }
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -172,6 +195,8 @@ public class MainFragment extends Fragment {
                         editor.putBoolean(Constants.SHARED_PREFERENCES_ALARM, false);
                         editor.commit();
                     }
+                    bluetoothCommunicationTask = new BluetoothCommunicationTask(activity.getApplicationContext());
+                    bluetoothCommunicationTask.connectToGlass();
                     //run demo
                     Intent i=new Intent(activity, BackgroundService.class);
                     i.putExtra(BackgroundService.EXTRA_MESSENGER, new Messenger(handler));

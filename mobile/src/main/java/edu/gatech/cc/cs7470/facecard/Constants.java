@@ -8,7 +8,7 @@ public class Constants {
     public static final String PACKAGE_NAME = "edu.gatech.cc.cs7470.facecard";
 
     //url
-    public static final String REGISTER_ACCOUNT_URL = "http://ec2-52-11-241-214.us-west-2.compute.amazonaws.com/facecard/setAccount.php";
+    public static final String REGISTER_ACCOUNT_URL = "http://ec2-54-68-110-119.us-west-2.compute.amazonaws.com/facecard/setAccount.php";
     public static final String DISCOVER_ACCOUNT_URL = "http://ec2-54-68-110-119.us-west-2.compute.amazonaws.com/facecard/getInfo.php";
 
     //profile layout settings

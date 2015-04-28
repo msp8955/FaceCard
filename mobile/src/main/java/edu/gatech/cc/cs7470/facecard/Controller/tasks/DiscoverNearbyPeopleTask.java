@@ -38,10 +38,12 @@ public class DiscoverNearbyPeopleTask extends AsyncTask<String, String, String> 
     private static final String TAG = "FaceCard DiscoverNearbyPeopleTask";
     private FaceCard[] faceCards;
     private Context context;
+    private boolean isDemo;
 
-    public DiscoverNearbyPeopleTask(Context c, OnTaskCompleted listener){
+    public DiscoverNearbyPeopleTask(Context c, OnTaskCompleted listener, boolean isDemo){
         context = c;
         this.listener = listener;
+        this.isDemo = isDemo;
     }
 
     /* Get Info for Facecard */
@@ -56,8 +58,6 @@ public class DiscoverNearbyPeopleTask extends AsyncTask<String, String, String> 
         rest = rest.replace(" ", "%20");
         Log.d(TAG, rest);
 
-
-        /*
         HttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(Constants.DISCOVER_ACCOUNT_URL + rest);
 
@@ -100,7 +100,7 @@ public class DiscoverNearbyPeopleTask extends AsyncTask<String, String, String> 
         } catch (JSONException e){
             Log.d(TAG, e.toString());
         }
-        */
+
 
         return "unsuccessful"; //account not found for bluetooth id
     }
@@ -126,7 +126,6 @@ public class DiscoverNearbyPeopleTask extends AsyncTask<String, String, String> 
 //            context.startService(i);
 
             listener.onTaskCompleted(faceCards);
-
 
 //            BluetoothCommunicationTask task = new BluetoothCommunicationTask(context);
 ////            task.connectToGlass();

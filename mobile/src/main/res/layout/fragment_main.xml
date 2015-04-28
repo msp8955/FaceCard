@@ -307,7 +307,7 @@
             android:id="@+id/profile_device_detected"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Last Detected"
+            android:text=""
             android:layout_marginTop="20dp"
             android:layout_gravity="left" />
 
