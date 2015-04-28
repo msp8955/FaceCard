@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -47,7 +48,6 @@ public class EightCardsActivity extends BaseActivity {
         mCardScrollView.setAdapter(mAdapter);
         mCardScrollView.activate();
 
-        //adapter = new ArrayAdapter(this, CardScrollActivity.class);
         mGestureDetector = createGestureDetector(this);
         setContentView(mCardScrollView);
     }
@@ -147,7 +147,7 @@ public class EightCardsActivity extends BaseActivity {
                     Log.d("test", "click");
                     AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
                     am.playSoundEffect(Sounds.TAP);
-                    //finish();
+                    finish();
                     Intent intent = new Intent(getApplicationContext(), CardScrollActivity.class);
                     startActivity(intent);
 
@@ -179,6 +179,14 @@ public class EightCardsActivity extends BaseActivity {
             }
         });
         return gestureDetector;
+    }
+
+    @Override
+    public boolean onGenericMotionEvent(MotionEvent event) {
+        if (mGestureDetector != null) {
+            return mGestureDetector.onMotionEvent(event);
+        }
+        return false;
     }
 
     protected void onStart() {
@@ -218,10 +226,6 @@ public class EightCardsActivity extends BaseActivity {
 //            return mCards.get(position).getView(convertView, parent);
             return mCards.get(position);
         }
-//        public void insertCardWithoutNotification(int position, CardBuilder card) {
-//            mCards.add(position, card);
-//        }
-
     }
 
     protected void onRestart() {
