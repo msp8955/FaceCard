@@ -248,19 +248,19 @@ public class MainActivity extends BaseActivity
                 editor.putString(Constants.SHARED_PREFERENCES_BLUETOOTH, uuid);
                 editor.commit();
 
-                if(!prefs.contains(Constants.SHARED_PREFERENCES_ALARM)){
-//                    bluetoothCommunicationTask = new BluetoothCommunicationTask(getApplicationContext());
-//                    bluetoothCommunicationTask.connectToGlass();
-                    //start background service
-                    Log.d(TAG, "setting alarm");
-//                    Intent i = new Intent(getApplicationContext(), BackgroundService.class);
-//                    getApplicationContext().startService(i);
-//                    getApplicationContext().bindService(i, myConnection, Context.BIND_AUTO_CREATE);
-                    BluetoothReceiver alarm = new BluetoothReceiver();
-                    alarm.setAlarm(getApplicationContext());
-                    editor.putBoolean(Constants.SHARED_PREFERENCES_ALARM, true);
-                    editor.commit();
-                }
+//                if(!prefs.contains(Constants.SHARED_PREFERENCES_ALARM)){
+////                    bluetoothCommunicationTask = new BluetoothCommunicationTask(getApplicationContext());
+////                    bluetoothCommunicationTask.connectToGlass();
+//                    //start background service
+//                    Log.d(TAG, "setting alarm");
+////                    Intent i = new Intent(getApplicationContext(), BackgroundService.class);
+////                    getApplicationContext().startService(i);
+////                    getApplicationContext().bindService(i, myConnection, Context.BIND_AUTO_CREATE);
+//                    BluetoothReceiver alarm = new BluetoothReceiver();
+//                    alarm.setAlarm(getApplicationContext());
+//                    editor.putBoolean(Constants.SHARED_PREFERENCES_ALARM, true);
+//                    editor.commit();
+//                }
 
             }
         });

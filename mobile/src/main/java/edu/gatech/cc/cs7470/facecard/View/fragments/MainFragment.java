@@ -6,6 +6,7 @@ package edu.gatech.cc.cs7470.facecard.View.fragments;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,6 +14,9 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,6 +25,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
@@ -28,6 +34,8 @@ import com.google.android.gms.plus.Plus;
 import java.io.InputStream;
 
 import edu.gatech.cc.cs7470.facecard.Constants;
+import edu.gatech.cc.cs7470.facecard.Controller.receivers.BluetoothReceiver;
+import edu.gatech.cc.cs7470.facecard.Controller.services.BackgroundService;
 import edu.gatech.cc.cs7470.facecard.Controller.utils.BluetoothUtil;
 import edu.gatech.cc.cs7470.facecard.Model.Profile;
 import edu.gatech.cc.cs7470.facecard.R;
@@ -50,17 +58,25 @@ public class MainFragment extends Fragment {
     private TextView tv_profile_name;
     private TextView tv_profile_tagline;
     private TextView tv_profile_organization;
-    private TextView tv_phone;
-    private TextView tv_email;
-    private TextView tv_website;
     private ImageView iv_profile_picture;
     private LinearLayout ll_profile_background;
+
+    private ToggleButton toggle_update;
+    private ToggleButton toggle_demo;
+    private TextView tv_device_detected;
 
 
     //links
     private TextView tv_google_link;
 
     private GoogleApiClient mGoogleApiClient;
+
+    private Handler handler=new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            Toast.makeText(activity, (String)msg.obj, Toast.LENGTH_SHORT).show();
+        }
+    };
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -91,15 +107,84 @@ public class MainFragment extends Fragment {
         tv_profile_tagline = (TextView)rootView.findViewById(R.id.profile_tagline);
         tv_profile_organization = (TextView)rootView.findViewById(R.id.profile_organization);
 
-//            tv_phone = (TextView)rootView.findViewById(R.id.profile_phone);
-        tv_email = (TextView)rootView.findViewById(R.id.profile_email);
-        tv_website = (TextView)rootView.findViewById(R.id.profile_website);
-
         iv_profile_picture = (ImageView)rootView.findViewById(R.id.profile_picture);
         ll_profile_background = (LinearLayout)rootView.findViewById(R.id.profile_cover);
 
         //links
         tv_google_link = (TextView)rootView.findViewById(R.id.google_link);
+
+        //toggle button
+        toggle_update = (ToggleButton)rootView.findViewById(R.id.profile_toggle_update);
+        toggle_demo = (ToggleButton)rootView.findViewById(R.id.profile_toggle_demo);
+
+        SharedPreferences prefs = activity.getSharedPreferences(Constants.PACKAGE_NAME, activity.MODE_PRIVATE);
+        if(prefs.contains(Constants.SHARED_PREFERENCES_ALARM)){
+            if(prefs.getBoolean(Constants.SHARED_PREFERENCES_ALARM, false)){
+                toggle_update.setChecked(true);
+            }else{
+                toggle_update.setChecked(false);
+            }
+        }else{
+            toggle_update.setChecked(false);
+        }
+
+        toggle_update.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences prefs = activity.getSharedPreferences(Constants.PACKAGE_NAME, activity.MODE_PRIVATE);
+                SharedPreferences.Editor editor = prefs.edit();
+                if (toggle_update.isChecked()) {
+                    if(!prefs.contains(Constants.SHARED_PREFERENCES_ALARM) || !prefs.getBoolean(Constants.SHARED_PREFERENCES_ALARM, false)){
+//                    bluetoothCommunicationTask = new BluetoothCommunicationTask(getApplicationContext());
+//                    bluetoothCommunicationTask.connectToGlass();
+                        //start background service
+                        Log.d(TAG, "setting alarm");
+//                    Intent i = new Intent(getApplicationContext(), BackgroundService.class);
+//                    getApplicationContext().startService(i);
+//                    getApplicationContext().bindService(i, myConnection, Context.BIND_AUTO_CREATE);
+                        BluetoothReceiver alarm = new BluetoothReceiver();
+                        alarm.setAlarm(activity.getApplicationContext());
+                        editor.putBoolean(Constants.SHARED_PREFERENCES_ALARM, true);
+                        editor.commit();
+                    }
+                    Toast.makeText(activity, "update on", Toast.LENGTH_SHORT).show();
+                } else {
+                    BluetoothReceiver alarm = new BluetoothReceiver();
+                    alarm.cancelAlarm(activity.getApplicationContext());
+                    editor.putBoolean(Constants.SHARED_PREFERENCES_ALARM, false);
+                    editor.commit();
+                    Toast.makeText(activity, "update off", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        toggle_demo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences prefs = activity.getSharedPreferences(Constants.PACKAGE_NAME, activity.MODE_PRIVATE);
+                if (toggle_demo.isChecked()) {
+                    //cancel update mode
+                    if(prefs.contains(Constants.SHARED_PREFERENCES_ALARM) && prefs.getBoolean(Constants.SHARED_PREFERENCES_ALARM, false)){
+                        toggle_update.toggle();
+                        SharedPreferences.Editor editor = prefs.edit();
+                        BluetoothReceiver alarm = new BluetoothReceiver();
+                        alarm.cancelAlarm(activity.getApplicationContext());
+                        editor.putBoolean(Constants.SHARED_PREFERENCES_ALARM, false);
+                        editor.commit();
+                    }
+                    //run demo
+                    Intent i=new Intent(activity, BackgroundService.class);
+                    i.putExtra(BackgroundService.EXTRA_MESSENGER, new Messenger(handler));
+                    getActivity().startService(i);
+                    Toast.makeText(activity, "demo on; update mode off", Toast.LENGTH_SHORT).show();
+                } else {
+                    getActivity().stopService(new Intent(getActivity(), BackgroundService.class));
+                    Toast.makeText(activity, "demo off", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        tv_device_detected = (TextView)rootView.findViewById(R.id.profile_device_detected);
 
         populateProfileInfo();
 
@@ -119,11 +204,6 @@ public class MainFragment extends Fragment {
                 tv_profile_name.setText(profile.getName());
                 tv_profile_tagline.setText(profile.getTagline());
                 tv_profile_organization.setText(profile.getOrganization());
-
-                //Contacts
-//                    tv_phone.setText(profile.getPhone());
-                tv_email.setText(profile.getEmail());
-//                    tv_website.setText(profile.getWebsite());
 
                 //Links
                 tv_google_link.setText(profile.getGoogle_link());

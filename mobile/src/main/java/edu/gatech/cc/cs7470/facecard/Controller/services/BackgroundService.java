@@ -9,6 +9,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,6 +26,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import edu.gatech.cc.cs7470.facecard.Constants;
 import edu.gatech.cc.cs7470.facecard.Controller.tasks.DiscoverNearbyPeopleTask;
 import edu.gatech.cc.cs7470.facecard.Model.FaceCard;
 
@@ -34,11 +36,16 @@ import edu.gatech.cc.cs7470.facecard.Model.FaceCard;
 public class BackgroundService extends Service implements OnTaskCompleted {
 
     private static final String TAG = "BackgroundService";
+    public static final String EXTRA_MESSENGER="edu.gatech.cc.cs7470.facecard.Controller.services.EXTRA_MESSENGER";
     private final IBinder mBinder = new MyBinder();
     private Messenger outMessenger;
 
+    private boolean isDemo;
+
     private Context context;
     private FaceCard[] faceCards;
+
+    private Messenger messenger;
 
     //For General Bluetooth stuff
     private BluetoothAdapter mBluetoothAdapter;
@@ -110,10 +117,27 @@ public class BackgroundService extends Service implements OnTaskCompleted {
     }
 
     @Override
+    public int onStartCommand (Intent intent, int flags, int startId) {
+        super.onStartCommand(intent, flags, startId);
+
+        Bundle extras=intent.getExtras();
+        messenger=(Messenger)extras.get(EXTRA_MESSENGER);
+        return Service.START_STICKY;
+    }
+
+    @Override
     public void onCreate(){
         super.onCreate();
         Log.d(TAG, "onCreate");
         context = getApplicationContext();
+
+        SharedPreferences prefs = getSharedPreferences(Constants.PACKAGE_NAME, MODE_PRIVATE);
+        if(!prefs.contains(Constants.SHARED_PREFERENCES_ALARM) || !prefs.getBoolean(Constants.SHARED_PREFERENCES_ALARM, false)){
+            //alarm set to off but is running; which means running a demo
+            isDemo = true;
+        }else{
+            isDemo = false;
+        }
 
         //check the bluetooth
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -384,6 +408,16 @@ public class BackgroundService extends Service implements OnTaskCompleted {
                     StringBuilder stringBuilder = new StringBuilder();
                     int i=0;
                     for(String bt : btDeviceList){
+                        if(isDemo){
+                            Message msg=Message.obtain();
+                            msg.obj = bt;
+                            try {
+                                messenger.send(msg);
+                            }
+                            catch (android.os.RemoteException e1) {
+                                Log.w(getClass().getName(), "Exception sending message", e1);
+                            }
+                        }
                         if(i+1<btDeviceList.size()){
                             stringBuilder.append(bt + ",");
                         }else{
