@@ -61,16 +61,27 @@ public class CardScrollActivity extends BaseActivity {
                 .setText("Version1.1 @FaceCard")
                 .setFootnote("Swiping Cards"));
 
+<<<<<<< HEAD
         for(FaceCard fc : faceCards) {
             mCards.add(new CardBuilder(this, CardBuilder.Layout.AUTHOR)
                     .setText(fc.getTag())
-                    .setIcon(fc.getProfilePicture())
-                    .setHeading(fc.getName())
-                    .setSubheading(fc.getAccountId())
-                    .setTimestamp("just now"));
-        }
+=======
+        addCards(faceCards.toArray(new FaceCard[faceCards.size()]));
+
     }
 
+    @Override
+    public void addCards(FaceCard[] faceCards) {
+
+        for(FaceCard fc : faceCards){
+            mCards.add(new CardBuilder(this, CardBuilder.Layout.ALERT)
+>>>>>>> upstream/master
+                    .setIcon(fc.getProfilePicture())
+                    .setText(fc.getName())
+                    .setFootnote(fc.getTag()));
+        }
+
+<<<<<<< HEAD
     @Override
     public void addCard(FaceCard faceCard) {
         mCards.add(new CardBuilder(this, CardBuilder.Layout.AUTHOR)
@@ -79,6 +90,15 @@ public class CardScrollActivity extends BaseActivity {
                 .setHeading(faceCard.getName())
                 .setSubheading(faceCard.getAccountId())
                 .setTimestamp("just now"));
+=======
+//        mCards.add(new CardBuilder(this, CardBuilder.Layout.AUTHOR)
+//                .setText(faceCard.getTag())
+//                .setIcon(faceCard.getProfilePicture())
+//                .setHeading(faceCard.getName())
+//                .setSubheading(faceCard.getAccountId())
+//                .setTimestamp("just now"));
+
+>>>>>>> upstream/master
     }
 
     private void setupClickListener() {
@@ -93,32 +113,6 @@ public class CardScrollActivity extends BaseActivity {
         });
     }
 
-
-
-//    private GestureDetector createGestureDetector(Context context) {
-//        GestureDetector gestureDetector = new GestureDetector((GestureDetector.OnGestureListener) context);
-//        gestureDetector.setBaseListener( new com.google.android.glass.touchpad.GestureDetector.BaseListener() {
-//            @Override
-//            public boolean onGesture(Gesture gesture) {
-//                if (gesture == Gesture.LONG_PRESS || gesture == Gesture.TAP) {
-//                    Log.d(TAG, "Tap"); //When I tap the touch panel, I only get LONG_PRESS
-//                    openOptionsMenu();
-//                    return true;
-//                } else if (gesture == Gesture.TWO_TAP) {
-//                    Intent twoIntent = new Intent(this, FourCardsActivity.class);
-//                    startActivity(twoIntent);
-//                    return true;
-//                } else if (gesture == Gesture.SWIPE_RIGHT) {
-//                    return true;
-//                } else if (gesture == Gesture.SWIPE_LEFT) {
-//
-//                    return true;
-//                }
-//                return false;
-//            }
-//        });
-//        return gestureDetector;
-//    }
 
     private class ExampleCardScrollAdapter extends CardScrollAdapter {
 
@@ -157,8 +151,4 @@ public class CardScrollActivity extends BaseActivity {
 
     }
 
-    private void insertNewCard(int position, CardBuilder card) {
-        mAdapter.insertCardWithoutNotification(position, card);
-        mCardScrollView.animate(position, CardScrollView.Animation.INSERTION);
-    }
 }
