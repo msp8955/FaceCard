@@ -69,7 +69,7 @@ public class CardScrollActivity extends BaseActivity {
     public void addCards(FaceCard[] faceCards) {
 
         for(FaceCard fc : faceCards){
-            mCards.add(new CardBuilder(this, CardBuilder.Layout.ALERT)
+            mCards.add(new CardBuilder(this, CardBuilder.Layout.AUTHOR)
                     .setIcon(fc.getProfilePicture())
                     .setText(fc.getName())
                     .setFootnote(fc.getTag()));
