@@ -61,6 +61,11 @@ public class CardScrollActivity extends BaseActivity {
                 .setText("Version1.1 @FaceCard")
                 .setFootnote("Swiping Cards"));
 
+<<<<<<< HEAD
+        for(FaceCard fc : faceCards) {
+            mCards.add(new CardBuilder(this, CardBuilder.Layout.AUTHOR)
+                    .setText(fc.getTag())
+=======
         addCards(faceCards.toArray(new FaceCard[faceCards.size()]));
 
     }
@@ -70,11 +75,22 @@ public class CardScrollActivity extends BaseActivity {
 
         for(FaceCard fc : faceCards){
             mCards.add(new CardBuilder(this, CardBuilder.Layout.ALERT)
+>>>>>>> upstream/master
                     .setIcon(fc.getProfilePicture())
                     .setText(fc.getName())
                     .setFootnote(fc.getTag()));
         }
 
+<<<<<<< HEAD
+    @Override
+    public void addCard(FaceCard faceCard) {
+        mCards.add(new CardBuilder(this, CardBuilder.Layout.AUTHOR)
+                .setText(faceCard.getTag())
+                .setIcon(faceCard.getProfilePicture())
+                .setHeading(faceCard.getName())
+                .setSubheading(faceCard.getAccountId())
+                .setTimestamp("just now"));
+=======
 //        mCards.add(new CardBuilder(this, CardBuilder.Layout.AUTHOR)
 //                .setText(faceCard.getTag())
 //                .setIcon(faceCard.getProfilePicture())
@@ -82,6 +98,7 @@ public class CardScrollActivity extends BaseActivity {
 //                .setSubheading(faceCard.getAccountId())
 //                .setTimestamp("just now"));
 
+>>>>>>> upstream/master
     }
 
     private void setupClickListener() {
