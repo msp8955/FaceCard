@@ -89,8 +89,8 @@ public abstract class BaseActivity extends Activity {
         faceCards.add(new FaceCard("bluetooth id 1", "first@gmail.com", "Amanda", "my tag1", icon));
         faceCards.add(new FaceCard("bluetooth id 2", "second@gmail.com", "Ben", "my tag2", icon));
         faceCards.add(new FaceCard("bluetooth id 3", "third@gmail.com", "Chris", "my tag3", icon));
-//        faceCards.add(new FaceCard("bluetooth id 4", "fourth@gmail.com", "David", "my tag4", icon));
-//        faceCards.add(new FaceCard("bluetooth id 5", "fifth@gmail.com", "Emily", "my tag5", icon));
+        faceCards.add(new FaceCard("bluetooth id 4", "fourth@gmail.com", "David", "my tag4", icon));
+        faceCards.add(new FaceCard("bluetooth id 5", "fifth@gmail.com", "Emily", "my tag5", icon));
 //        faceCards.add(new FaceCard("bluetooth id 6", "sixth@gmail.com", "Flynn", "my tag6", icon));
 //        faceCards.add(new FaceCard("bluetooth id 7", "seventh@gmail.com", "George", "my tag7", icon));
 //        faceCards.add(new FaceCard("bluetooth id 8", "eighth@gmail.com", "Helen", "my tag8", icon));
