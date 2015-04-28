@@ -92,6 +92,9 @@ public abstract class BaseActivity extends Activity {
         faceCards.add(new FaceCard("bluetooth id 3", "third@gmail.com", "Chris", "my tag3", icon));
         faceCards.add(new FaceCard("bluetooth id 4", "fourth@gmail.com", "David", "my tag4", icon));
         faceCards.add(new FaceCard("bluetooth id 5", "fifth@gmail.com", "Emily", "my tag5", icon));
+        faceCards.add(new FaceCard("bluetooth id 6", "sixth@gmail.com", "Flynn", "my tag6", icon));
+        faceCards.add(new FaceCard("bluetooth id 7", "seventh@gmail.com", "George", "my tag7", icon));
+        faceCards.add(new FaceCard("bluetooth id 8", "eighth@gmail.com", "Helen", "my tag8", icon));
 
         uuids[0] = UUID.fromString(uuid1);
         uuids[1] = UUID.fromString(uuid2);
@@ -126,7 +129,8 @@ public abstract class BaseActivity extends Activity {
                             if(!faceCards.contains(faceCard)){
                                 faceCards.add(faceCard);
                                 Log.d(TAG, "added card to list");
-                                addCard(faceCard);
+//                                addCards(faceCards.toArray(new FaceCard[faceCards.size()]));
+                                setupCard();
                             }
                         } catch(ClassNotFoundException | IOException e){
                             Log.d(TAG, "deserialize fail " + e.getMessage());
@@ -155,7 +159,7 @@ public abstract class BaseActivity extends Activity {
     }
 
     public abstract void setupCard();
-    public abstract void addCard(FaceCard faceCard);
+    public abstract void addCards(FaceCard[] faceCard);
 
 
     public void startListening() {

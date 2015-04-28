@@ -91,7 +91,8 @@ public class FourCardsActivity extends BaseActivity {
 
     }
 
-    private void addCards(FaceCard[] fourCards){
+    @Override
+    public void addCards(FaceCard[] fourCards){
         CardBuilder cb = new CardBuilder(this, CardBuilder.Layout.EMBED_INSIDE)
                 .setEmbeddedLayout(R.layout.grid_four_views);
         View view = cb.getView();
@@ -134,12 +135,6 @@ public class FourCardsActivity extends BaseActivity {
         four_note_4.setText(fourCards[3].getTag());
 
         mCards.add(view);
-    }
-
-    @Override
-    public void addCard(FaceCard faceCard) {
-        //TODO
-
     }
 
     private GestureDetector createGestureDetector(Context context) {
