@@ -74,7 +74,7 @@ public class EightCardsActivity extends BaseActivity {
                     eightCards[i] = faceCards.get(counter);
                 }else{
                     //add empty cards
-                    eightCards[i] = new FaceCard("","","","");
+                    eightCards[i] = new FaceCard("","","","","");
                 }
                 Log.d("facecard", counter + "");
                 counter++;

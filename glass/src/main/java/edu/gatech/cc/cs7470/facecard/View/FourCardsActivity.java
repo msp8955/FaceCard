@@ -81,7 +81,7 @@ public class FourCardsActivity extends BaseActivity {
                 }else{
                     //TODO
                     //add empty cards
-                    fourCards[i] = new FaceCard("","","","");
+                    fourCards[i] = new FaceCard("","","","","");
                 }
                 Log.d("facecard", counter + "");
                 counter++;

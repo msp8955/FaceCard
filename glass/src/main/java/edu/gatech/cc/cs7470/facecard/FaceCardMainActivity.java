@@ -404,7 +404,7 @@ public class FaceCardMainActivity extends Activity {
                     cards[j]=faceCards.get(i*div+j);
                 }catch(Exception e){
                     Bitmap.Config conf = Bitmap.Config.ARGB_8888;
-                    cards[j]= new FaceCard("","","","",Bitmap.createBitmap(100, 100, conf));
+//                    cards[j]= new FaceCard("","","","",Bitmap.createBitmap(100, 100, conf));
                 }
             }
             faceCardsToSend.add(cards);

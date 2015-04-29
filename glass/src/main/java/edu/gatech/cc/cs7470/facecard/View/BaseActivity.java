@@ -9,6 +9,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -17,6 +20,8 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.android.glass.app.Card;
@@ -86,14 +91,14 @@ public abstract class BaseActivity extends Activity {
 
         Bitmap icon = BitmapFactory.decodeResource(getResources(),
                 R.drawable.profile_picture_default);
-        faceCards.add(new FaceCard("bluetooth id 1", "first@gmail.com", "Amanda", "my tag1", icon));
-        faceCards.add(new FaceCard("bluetooth id 2", "second@gmail.com", "Ben", "my tag2", icon));
-        faceCards.add(new FaceCard("bluetooth id 3", "third@gmail.com", "Chris", "my tag3", icon));
-        faceCards.add(new FaceCard("bluetooth id 4", "fourth@gmail.com", "David", "my tag4", icon));
-        faceCards.add(new FaceCard("bluetooth id 5", "fifth@gmail.com", "Emily", "my tag5", icon));
-//        faceCards.add(new FaceCard("bluetooth id 6", "sixth@gmail.com", "Flynn", "my tag6", icon));
-//        faceCards.add(new FaceCard("bluetooth id 7", "seventh@gmail.com", "George", "my tag7", icon));
-//        faceCards.add(new FaceCard("bluetooth id 8", "eighth@gmail.com", "Helen", "my tag8", icon));
+        faceCards.add(new FaceCard("bluetooth id 1", "first@gmail.com", "Amanda", "", "my tag1", icon));
+        faceCards.add(new FaceCard("bluetooth id 2", "second@gmail.com", "Ben", "", "my tag2", icon));
+        faceCards.add(new FaceCard("bluetooth id 3", "third@gmail.com", "Chris", "", "my tag3", icon));
+        faceCards.add(new FaceCard("bluetooth id 4", "fourth@gmail.com", "David", "", "my tag4", icon));
+        faceCards.add(new FaceCard("bluetooth id 5", "fifth@gmail.com", "Emily", "", "my tag5", icon));
+//        faceCards.add(new FaceCard("bluetooth id 6", "sixth@gmail.com", "Flynn", "", "my tag6", icon));
+//        faceCards.add(new FaceCard("bluetooth id 7", "seventh@gmail.com", "George", "", "my tag7", icon));
+//        faceCards.add(new FaceCard("bluetooth id 8", "eighth@gmail.com", "Helen", "", "my tag8", icon));
 
         uuids[0] = UUID.fromString(uuid1);
         uuids[1] = UUID.fromString(uuid2);
@@ -374,7 +379,7 @@ public abstract class BaseActivity extends Activity {
                     cards[j]=faceCards.get(i*div+j);
                 }catch(Exception e){
                     Bitmap.Config conf = Bitmap.Config.ARGB_8888;
-                    cards[j]= new FaceCard("","","","",Bitmap.createBitmap(100, 100, conf));
+                    cards[j]= new FaceCard("","","","","",Bitmap.createBitmap(100, 100, conf));
                 }
             }
             faceCardsToSend.add(cards);
@@ -443,6 +448,52 @@ public abstract class BaseActivity extends Activity {
         ByteArrayInputStream b = new ByteArrayInputStream(bytes);
         ObjectInputStream o = new ObjectInputStream(b);
         return (FaceCard) o.readObject();
+    }
+
+    /**
+     * Background Async task to load user profile picture from url
+     * */
+    private class LoadProfileImage extends AsyncTask<String, Void, Bitmap> {
+        ImageView bmImage;
+        LinearLayout coverImage;
+//        RoundImageHelper roundImageHelper;
+        boolean isCoverImage;
+
+        public LoadProfileImage(ImageView bmImage) {
+            this.bmImage = bmImage;
+            this.isCoverImage = false;
+//            roundImageHelper = new RoundImageHelper();
+        }
+
+        public LoadProfileImage(LinearLayout coverImage) {
+            this.coverImage = coverImage;
+            this.isCoverImage = true;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            if(result != null) {
+                if (isCoverImage) {
+                    Drawable background = new BitmapDrawable(result);
+                    coverImage.setBackground(background);
+                } else {
+                    bmImage.setImageBitmap(result);
+//                    bmImage.setImageBitmap(roundImageHelper.getRoundedCornerBitmap(result, Constants.PROFILE_PIC_RADIUS));
+                }
+            }
+        }
     }
 
 }
