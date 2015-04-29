@@ -44,7 +44,6 @@ public class BackgroundService extends Service implements OnTaskCompleted {
 
     private Context context;
     private FaceCard[] faceCards;
-    private HashSet<String> bluetoothIdSet;
 
     private Messenger messenger;
 
@@ -79,7 +78,7 @@ public class BackgroundService extends Service implements OnTaskCompleted {
                 case SUCCESS_CONNECT:
                     //read and write data from remote device
                     Log.d(TAG, "SUCCESS_CONNECT");
-                    unregisterReceiver(receiver);
+//                    unregisterReceiver(receiver);
                     connectedThread = new ConnectedThread((BluetoothSocket)msg.obj);
                     connectedThread.start();
                     sendFaceCards();
@@ -121,10 +120,10 @@ public class BackgroundService extends Service implements OnTaskCompleted {
     public int onStartCommand (Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
 
-        bluetoothIdSet = new HashSet<>();
-
-        Bundle extras=intent.getExtras();
-        messenger=(Messenger)extras.get(EXTRA_MESSENGER);
+        if(isDemo) {
+            Bundle extras = intent.getExtras();
+            messenger = (Messenger) extras.get(EXTRA_MESSENGER);
+        }
         return Service.START_STICKY;
     }
 
@@ -164,8 +163,13 @@ public class BackgroundService extends Service implements OnTaskCompleted {
                 String action = intent.getAction();
                 // When discovery finds a device
                 if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-                    // Get the BluetoothDevice object from the Intent
                     BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                    Log.d(TAG, "initBluetooth" + device.getName() + " " + device.getAddress() + " " + device.getUuids());
+                    if(!btDeviceList.contains(device.getAddress())){
+                        btDeviceList.add(device.getAddress());
+                    }
+                    // Get the BluetoothDevice object from the Intent
+//                    BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 //                    devices.add(device);
                     //pairedDevices.add(device.getName());
                 }
@@ -411,27 +415,24 @@ public class BackgroundService extends Service implements OnTaskCompleted {
                     StringBuilder stringBuilder = new StringBuilder();
                     int i=0;
                     for(String bt : btDeviceList){
-                        if(isDemo){
-                            if(!bluetoothIdSet.contains(bt)) {
-                                Message msg = Message.obtain();
-                                msg.obj = bt;
-                                try {
-                                    messenger.send(msg);
-                                } catch (android.os.RemoteException e1) {
-                                    Log.w(getClass().getName(), "Exception sending message", e1);
-                                }
-                                bluetoothIdSet.add(bt);
-                            }
-                        }
                         if(i+1<btDeviceList.size()){
                             stringBuilder.append(bt + ",");
                         }else{
-                            stringBuilder.append(bt + "," + "AA:AA:AA:AA:AA:AA,123"); //test
+                            stringBuilder.append(bt); //test
                         }
                         i++;
                     }
                     if(!isDemo) {
                         new DiscoverNearbyPeopleTask(context, BackgroundService.this, isDemo).execute(stringBuilder.toString());
+                    }else{
+                        Log.d(TAG, "demo detected: " + stringBuilder.toString());
+                        Message msg = Message.obtain();
+                        msg.obj = stringBuilder.toString();
+                        try {
+                            messenger.send(msg);
+                        } catch (android.os.RemoteException e1) {
+                            Log.w(getClass().getName(), "Exception sending message", e1);
+                        }
                     }
 
                 }

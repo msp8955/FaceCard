@@ -69,6 +69,7 @@ public class MainFragment extends Fragment implements OnTaskCompleted{
     private ToggleButton toggle_demo;
     private TextView tv_device_detected;
     private BluetoothCommunicationTask bluetoothCommunicationTask;
+    private boolean isDemo;
 
     //links
     private TextView tv_google_link;
@@ -83,7 +84,7 @@ public class MainFragment extends Fragment implements OnTaskCompleted{
             if(tv_device_detected.getText().length()==0){
                 tv_device_detected.setText(btid);
             }else {
-                tv_device_detected.setText(tv_device_detected.getTag() + ", " + btid);
+                tv_device_detected.setText(tv_device_detected.getText() + ", " + btid);
             }
             Toast.makeText(activity, btid, Toast.LENGTH_SHORT).show();
         }
@@ -95,8 +96,9 @@ public class MainFragment extends Fragment implements OnTaskCompleted{
         if(result!=null){
             for (FaceCard card : result){
                 Log.d(TAG, "card: " + card.getName());
+                bluetoothCommunicationTask.sendToGlass(card);
             }
-            bluetoothCommunicationTask.sendToGlass(result);
+//            bluetoothCommunicationTask.sendToGlass(result);
 //            connectToGlass();
         }
     }
@@ -139,6 +141,7 @@ public class MainFragment extends Fragment implements OnTaskCompleted{
         //toggle button
         toggle_update = (ToggleButton)rootView.findViewById(R.id.profile_toggle_update);
         toggle_demo = (ToggleButton)rootView.findViewById(R.id.profile_toggle_demo);
+        isDemo = false;
 
         SharedPreferences prefs = activity.getSharedPreferences(Constants.PACKAGE_NAME, activity.MODE_PRIVATE);
         if(prefs.contains(Constants.SHARED_PREFERENCES_ALARM)){
@@ -195,14 +198,18 @@ public class MainFragment extends Fragment implements OnTaskCompleted{
                         editor.putBoolean(Constants.SHARED_PREFERENCES_ALARM, false);
                         editor.commit();
                     }
-                    bluetoothCommunicationTask = new BluetoothCommunicationTask(activity.getApplicationContext());
-                    bluetoothCommunicationTask.connectToGlass();
+                    if(!isDemo) {
+                        bluetoothCommunicationTask = new BluetoothCommunicationTask(activity.getApplicationContext());
+                        bluetoothCommunicationTask.connectToGlass();
+                        isDemo = true;
+                    }
                     //run demo
                     Intent i=new Intent(activity, BackgroundService.class);
                     i.putExtra(BackgroundService.EXTRA_MESSENGER, new Messenger(handler));
                     getActivity().startService(i);
                     Toast.makeText(activity, "demo on; update mode off", Toast.LENGTH_SHORT).show();
                 } else {
+//                    bluetoothCommunicationTask.stop();
                     getActivity().stopService(new Intent(getActivity(), BackgroundService.class));
                     Toast.makeText(activity, "demo off", Toast.LENGTH_SHORT).show();
                 }

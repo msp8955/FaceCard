@@ -65,17 +65,6 @@ public class MainActivity extends BaseActivity
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         currentNavigationFragment = 0;
 
-//        if (savedInstanceState == null) {
-//            getSupportFragmentManager().beginTransaction()
-//                    .add(R.id.container, new MainFragment()).commit();
-//        }
-
-//        tv_profile_description = (TextView)findViewById(R.id.profile_description);
-//        tv_profile_organization = (TextView)findViewById(R.id.profile_organization);
-//        iv_profile_picture = (ImageView)findViewById(R.id.profile_picture);
-//        ll_profile_background = (LinearLayout)findViewById(R.id.profile_background);
-
-
         mTitle = getTitle();
 
         // Set up the drawer.
@@ -240,7 +229,7 @@ public class MainActivity extends BaseActivity
 
                 new RegisterBluetoothTask().execute(profile.getEmail(),
                         profile.getBluetoothInfo().getBluetoothId(), profile.getName(),
-                        profile.getTagline());
+                        profile.getProfile_picture_url(), profile.getTagline());
 
                 //save
                 SharedPreferences prefs = getSharedPreferences(Constants.PACKAGE_NAME, MODE_PRIVATE);

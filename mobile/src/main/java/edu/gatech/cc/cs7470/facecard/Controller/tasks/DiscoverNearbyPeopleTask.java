@@ -83,11 +83,14 @@ public class DiscoverNearbyPeopleTask extends AsyncTask<String, String, String> 
             faceCards = new FaceCard[jsonArray.length()];
             for(int i=0; i< jsonArray.length(); i++){
                 JSONObject currentObject = jsonArray.getJSONObject(i);
+                Bitmap.Config conf = Bitmap.Config.ARGB_8888;
                 faceCards[i] = new FaceCard(
                         currentObject.getString("bluetooth_id"),
                         currentObject.getString("google_account"),
                         currentObject.getString("name"),
-                        currentObject.getString("personal_tags"));
+                        currentObject.getString("major"),
+                        currentObject.getString("personal_tags"),
+                        Bitmap.createBitmap(100, 100, conf));
             }
 
             Log.d(TAG, stringBuilder.toString());
@@ -117,7 +120,7 @@ public class DiscoverNearbyPeopleTask extends AsyncTask<String, String, String> 
 
         FaceCard[] faceCardForDebugging = new FaceCard[1];
         Bitmap.Config conf = Bitmap.Config.ARGB_8888;
-        faceCardForDebugging[0] = new FaceCard("btid1", "gmail1", "name1", "tag1", Bitmap.createBitmap(100, 100, conf));
+        faceCardForDebugging[0] = new FaceCard("btid1", "gmail1", "name1", "imageLink", "tag1", Bitmap.createBitmap(100, 100, conf));
 //        faceCardForDebugging[1] = new FaceCard("btid2", "gmail2", "name2", "tag2");
         if(result.equals("successful") && faceCards!= null && faceCards.length>0){
             Log.d(TAG, "discovered neighbors: " + faceCards.length);
@@ -130,8 +133,9 @@ public class DiscoverNearbyPeopleTask extends AsyncTask<String, String, String> 
 //            BluetoothCommunicationTask task = new BluetoothCommunicationTask(context);
 ////            task.connectToGlass();
 //            task.sendToGlass(faceCards);
-        }else{
-            listener.onTaskCompleted(faceCardForDebugging);
         }
+//        else{
+//            listener.onTaskCompleted(faceCardForDebugging);
+//        }
     }
 }

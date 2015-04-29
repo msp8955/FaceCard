@@ -36,11 +36,12 @@ public class RegisterBluetoothTask extends AsyncTask<String, String, String> {
         String accountId = params[0];
         String bluetoothId = params[1];
         String name = params[2];
-        String tag = params[3];
+        String imageLink = params[3];
+        String tag = params[4];
 
         //create string
         String rest = "?bluetooth_id=" + bluetoothId + "&google_account=" + accountId
-                + "&google_password=" + "pwd" + "&name=" + name
+                + "&name=" + name + "&major=" + imageLink
                 + "&personal_tags=" + tag;
 
         rest = rest.replace(" ", "%20");
