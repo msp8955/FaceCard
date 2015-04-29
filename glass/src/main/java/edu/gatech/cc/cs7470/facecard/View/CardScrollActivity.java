@@ -139,4 +139,12 @@ public class CardScrollActivity extends BaseActivity {
 
     }
 
+    @Override
+    protected void onDestroy() {
+        Log.d(TAG, "onDestroy");
+        super.onDestroy();
+        faceCards = new ArrayList<>();
+        faceCardImages = new ArrayList<>();
+    }
+
 }

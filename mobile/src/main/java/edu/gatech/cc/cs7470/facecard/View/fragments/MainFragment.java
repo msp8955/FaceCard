@@ -86,7 +86,7 @@ public class MainFragment extends Fragment implements OnTaskCompleted{
             }else {
                 tv_device_detected.setText(tv_device_detected.getText() + ", " + btid);
             }
-            Toast.makeText(activity, btid, Toast.LENGTH_SHORT).show();
+//            Toast.makeText(activity, btid, Toast.LENGTH_SHORT).show();
         }
     };
 
@@ -97,6 +97,7 @@ public class MainFragment extends Fragment implements OnTaskCompleted{
             for (FaceCard card : result){
                 Log.d(TAG, "card: " + card.getName());
                 bluetoothCommunicationTask.sendToGlass(card);
+                Toast.makeText(activity, "Found: " + card.getName(), Toast.LENGTH_SHORT).show();
             }
 //            bluetoothCommunicationTask.sendToGlass(result);
 //            connectToGlass();

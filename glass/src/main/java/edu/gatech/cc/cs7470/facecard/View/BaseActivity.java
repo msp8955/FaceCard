@@ -138,9 +138,8 @@ public abstract class BaseActivity extends Activity {
                             faceCard = deserialize(readBuf);
                             Log.d(TAG, "received the card" + faceCard.getName());
                             if(!faceCards.contains(faceCard)){
-                                faceCards.add(faceCard);
                                 Log.d(TAG, "added card to list");
-                                new LoadProfileImage().execute(faceCard.getImageLink());
+                                new LoadProfileImage(faceCard).execute(faceCard.getImageLink());
 //                                addCards(faceCards.toArray(new FaceCard[faceCards.size()]));
                             }
                         } catch(ClassNotFoundException | IOException e){
@@ -357,8 +356,11 @@ public abstract class BaseActivity extends Activity {
 
 //    @Override
 //    protected void onDestroy() {
+//        Log.d(TAG, "onDestroy");
 //        super.onDestroy();
-//        unregisterReceiver(mReceiver);
+//        faceCards = new ArrayList<>();
+//        faceCardImages = new ArrayList<>();
+////        unregisterReceiver(mReceiver);
 //    }
 
     private void setupScrollView(){
@@ -461,7 +463,11 @@ public abstract class BaseActivity extends Activity {
      * Background Async task to load user profile picture from url
      * */
     private class LoadProfileImage extends AsyncTask<String, Void, Bitmap> {
-        public LoadProfileImage(){}
+        private FaceCard faceCard;
+
+        public LoadProfileImage(FaceCard faceCard){
+            this.faceCard = faceCard;
+        }
 
         protected Bitmap doInBackground(String... urls) {
             String urldisplay = urls[0];
@@ -478,6 +484,7 @@ public abstract class BaseActivity extends Activity {
 
         protected void onPostExecute(Bitmap result) {
             if(result != null) {
+                faceCards.add(faceCard);
                 faceCardImages.add(result);
                 setupCard();
             }else{
