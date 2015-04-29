@@ -3,6 +3,7 @@ package edu.gatech.cc.cs7470.facecard.View;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -32,6 +33,8 @@ import edu.gatech.cc.cs7470.facecard.R;
  */
 public class EightCardsActivity extends BaseActivity {
 
+    private static final String TAG = "EightCardsActivity";
+
     private List<View> mCards;
 
     private CardScrollView mCardScrollView;
@@ -40,6 +43,7 @@ public class EightCardsActivity extends BaseActivity {
 
 
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setupCard();
 
@@ -54,38 +58,47 @@ public class EightCardsActivity extends BaseActivity {
 
     @Override
     public void setupCard() {
+        Log.d(TAG, "setupCard");
+        Log.d(TAG, "faceCards length: " + faceCards.size());
         mCards = new ArrayList<View>();
         int counter = 0;
         for(int i=0; i<faceCards.size()/8; i++){
             FaceCard[] eightCards = new FaceCard[8];
+            Bitmap[] images = new Bitmap[8];
             for(int j=0; j<8; j++){
                 //add facecards
                 eightCards[j] = faceCards.get(counter);
+                images[j] = faceCardImages.get(counter);
                 counter++;
                 Log.d("facecard", counter + "");
             }
-            addCards(eightCards);
+            addCards(eightCards, images);
         }
         if(faceCards.size()%8 != 0) {
             FaceCard[] eightCards = new FaceCard[8];
+            Bitmap[] images = new Bitmap[8];
             for (int i = 0; i < 8; i++) {
                 if (i < faceCards.size() % 8) {
                     //add facecards
                     eightCards[i] = faceCards.get(counter);
+                    images[i] = faceCardImages.get(counter);
                 }else{
                     //add empty cards
                     eightCards[i] = new FaceCard("","","","","");
+                    Bitmap.Config conf = Bitmap.Config.ARGB_8888;
+                    images[i] = Bitmap.createBitmap(100, 100, conf);
                 }
                 Log.d("facecard", counter + "");
                 counter++;
             }
-            addCards(eightCards);
+            addCards(eightCards, images);
         }
 
     }
 
     @Override
-    public void addCards(FaceCard[] eightCards){
+    public void addCards(FaceCard[] eightCards, Bitmap[] images){
+        Log.d(TAG, "addCards");
 
         //eight card
         CardBuilder cb = new CardBuilder(this, CardBuilder.Layout.EMBED_INSIDE)
@@ -94,42 +107,42 @@ public class EightCardsActivity extends BaseActivity {
 
         //eight card
         ImageView eight_img_1 = (ImageView) view.findViewById(R.id.eight_image_1);
-        eight_img_1.setImageBitmap(eightCards[0].getProfilePicture());
+        eight_img_1.setImageBitmap(images[0]);
         TextView eight_name_1 = (TextView) view.findViewById(R.id.eight_name_1);
         eight_name_1.setText(eightCards[0].getName());
 
         ImageView eight_img_2 = (ImageView) view.findViewById(R.id.eight_image_2);
-        eight_img_2.setImageBitmap(eightCards[1].getProfilePicture());
+        eight_img_2.setImageBitmap(images[1]);
         TextView eight_name_2 = (TextView) view.findViewById(R.id.eight_name_2);
         eight_name_2.setText(eightCards[1].getName());
 
         ImageView eight_img_3 = (ImageView) view.findViewById(R.id.eight_image_3);
-        eight_img_3.setImageBitmap(eightCards[2].getProfilePicture());
+        eight_img_3.setImageBitmap(images[2]);
         TextView eight_name_3 = (TextView) view.findViewById(R.id.eight_name_3);
         eight_name_3.setText(eightCards[2].getName());
 
         ImageView eight_img_4 = (ImageView) view.findViewById(R.id.eight_image_4);
-        eight_img_4.setImageBitmap(eightCards[3].getProfilePicture());
+        eight_img_4.setImageBitmap(images[3]);
         TextView eight_name_4 = (TextView) view.findViewById(R.id.eight_name_4);
         eight_name_4.setText(eightCards[3].getName());
 
         ImageView eight_img_5 = (ImageView) view.findViewById(R.id.eight_image_5);
-        eight_img_5.setImageBitmap(eightCards[4].getProfilePicture());
+        eight_img_5.setImageBitmap(images[4]);
         TextView eight_name_5 = (TextView) view.findViewById(R.id.eight_name_5);
         eight_name_5.setText(eightCards[4].getName());
 
         ImageView eight_img_6 = (ImageView) view.findViewById(R.id.eight_image_6);
-        eight_img_6.setImageBitmap(eightCards[5].getProfilePicture());
+        eight_img_6.setImageBitmap(images[5]);
         TextView eight_name_6 = (TextView) view.findViewById(R.id.eight_name_6);
         eight_name_6.setText(eightCards[5].getName());
 
         ImageView eight_img_7 = (ImageView) view.findViewById(R.id.eight_image_7);
-        eight_img_7.setImageBitmap(eightCards[6].getProfilePicture());
+        eight_img_7.setImageBitmap(images[6]);
         TextView eight_name_7 = (TextView) view.findViewById(R.id.eight_name_7);
         eight_name_7.setText(eightCards[6].getName());
 
         ImageView eight_img_8 = (ImageView) view.findViewById(R.id.eight_image_8);
-        eight_img_8.setImageBitmap(eightCards[7].getProfilePicture());
+        eight_img_8.setImageBitmap(images[7]);
         TextView eight_name_8 = (TextView) view.findViewById(R.id.eight_name_8);
         eight_name_8.setText(eightCards[7].getName());
 

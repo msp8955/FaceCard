@@ -51,7 +51,8 @@ public abstract class BaseActivity extends Activity {
 
     private static final String TAG = "BaseActivity";
 
-    protected static ArrayList<FaceCard> faceCards;
+    protected static ArrayList<FaceCard> faceCards = new ArrayList<>();
+    protected static ArrayList<Bitmap> faceCardImages = new ArrayList<>();
     private List<Card> mCards;
     private CardScrollView mCardScrollView;
     private GestureDetector mGestureDetector;
@@ -82,24 +83,30 @@ public abstract class BaseActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
 
         //initialize an array list of card object, which works the same as the list view..
         mCards = new ArrayList<Card>();
         mGestureDetector = this.createGestureDetector(this);
-        faceCards = new ArrayList<FaceCard>();
 
         Bitmap icon = BitmapFactory.decodeResource(getResources(),
                 R.drawable.profile_picture_default);
-        faceCards.add(new FaceCard("bluetooth id 1", "first@gmail.com", "Amanda", "", "my tag1", icon));
-        faceCards.add(new FaceCard("bluetooth id 2", "second@gmail.com", "Ben", "", "my tag2", icon));
-        faceCards.add(new FaceCard("bluetooth id 3", "third@gmail.com", "Chris", "", "my tag3", icon));
-        faceCards.add(new FaceCard("bluetooth id 4", "fourth@gmail.com", "David", "", "my tag4", icon));
-        faceCards.add(new FaceCard("bluetooth id 5", "fifth@gmail.com", "Emily", "", "my tag5", icon));
-//        faceCards.add(new FaceCard("bluetooth id 6", "sixth@gmail.com", "Flynn", "", "my tag6", icon));
-//        faceCards.add(new FaceCard("bluetooth id 7", "seventh@gmail.com", "George", "", "my tag7", icon));
-//        faceCards.add(new FaceCard("bluetooth id 8", "eighth@gmail.com", "Helen", "", "my tag8", icon));
-
+//        if(faceCards.size()==0) {
+//            faceCardImages.add(icon);
+//            faceCardImages.add(icon);
+//            faceCardImages.add(icon);
+//            faceCardImages.add(icon);
+//            faceCardImages.add(icon);
+//            faceCards.add(new FaceCard("bluetooth id 1", "first@gmail.com", "Amanda", "", "my tag1", icon));
+//            faceCards.add(new FaceCard("bluetooth id 2", "second@gmail.com", "Ben", "", "my tag2", icon));
+//            faceCards.add(new FaceCard("bluetooth id 3", "third@gmail.com", "Chris", "", "my tag3", icon));
+//            faceCards.add(new FaceCard("bluetooth id 4", "fourth@gmail.com", "David", "", "my tag4", icon));
+//            faceCards.add(new FaceCard("bluetooth id 5", "fifth@gmail.com", "Emily", "", "my tag5", icon));
+////        faceCards.add(new FaceCard("bluetooth id 6", "sixth@gmail.com", "Flynn", "", "my tag6", icon));
+////        faceCards.add(new FaceCard("bluetooth id 7", "seventh@gmail.com", "George", "", "my tag7", icon));
+////        faceCards.add(new FaceCard("bluetooth id 8", "eighth@gmail.com", "Helen", "", "my tag8", icon));
+//        }
         uuids[0] = UUID.fromString(uuid1);
         uuids[1] = UUID.fromString(uuid2);
 
@@ -133,8 +140,8 @@ public abstract class BaseActivity extends Activity {
                             if(!faceCards.contains(faceCard)){
                                 faceCards.add(faceCard);
                                 Log.d(TAG, "added card to list");
+                                new LoadProfileImage().execute(faceCard.getImageLink());
 //                                addCards(faceCards.toArray(new FaceCard[faceCards.size()]));
-                                setupCard();
                             }
                         } catch(ClassNotFoundException | IOException e){
                             Log.d(TAG, "deserialize fail " + e.getMessage());
@@ -163,7 +170,7 @@ public abstract class BaseActivity extends Activity {
     }
 
     public abstract void setupCard();
-    public abstract void addCards(FaceCard[] faceCard);
+    public abstract void addCards(FaceCard[] faceCard, Bitmap[] images);
 
 
     public void startListening() {
@@ -454,21 +461,7 @@ public abstract class BaseActivity extends Activity {
      * Background Async task to load user profile picture from url
      * */
     private class LoadProfileImage extends AsyncTask<String, Void, Bitmap> {
-        ImageView bmImage;
-        LinearLayout coverImage;
-//        RoundImageHelper roundImageHelper;
-        boolean isCoverImage;
-
-        public LoadProfileImage(ImageView bmImage) {
-            this.bmImage = bmImage;
-            this.isCoverImage = false;
-//            roundImageHelper = new RoundImageHelper();
-        }
-
-        public LoadProfileImage(LinearLayout coverImage) {
-            this.coverImage = coverImage;
-            this.isCoverImage = true;
-        }
+        public LoadProfileImage(){}
 
         protected Bitmap doInBackground(String... urls) {
             String urldisplay = urls[0];
@@ -485,13 +478,12 @@ public abstract class BaseActivity extends Activity {
 
         protected void onPostExecute(Bitmap result) {
             if(result != null) {
-                if (isCoverImage) {
-                    Drawable background = new BitmapDrawable(result);
-                    coverImage.setBackground(background);
-                } else {
-                    bmImage.setImageBitmap(result);
-//                    bmImage.setImageBitmap(roundImageHelper.getRoundedCornerBitmap(result, Constants.PROFILE_PIC_RADIUS));
-                }
+                faceCardImages.add(result);
+                setupCard();
+            }else{
+                Bitmap default_icon = BitmapFactory.decodeResource(getResources(),
+                        R.drawable.profile_picture_default);
+                faceCardImages.add(default_icon);
             }
         }
     }

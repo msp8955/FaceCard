@@ -3,6 +3,7 @@ package edu.gatech.cc.cs7470.facecard.View;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.nfc.Tag;
 import android.os.Bundle;
@@ -38,6 +39,8 @@ import edu.gatech.cc.cs7470.facecard.R;
 
 public class FourCardsActivity extends BaseActivity {
 
+    private static final String TAG = "FourCardsActivity";
+
     private List<View> mCards;
 
     private CardScrollView mCardScrollView;
@@ -45,6 +48,7 @@ public class FourCardsActivity extends BaseActivity {
     private GestureDetector mGestureDetector;
 
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setupCard();
 
@@ -60,46 +64,55 @@ public class FourCardsActivity extends BaseActivity {
 
     @Override
     public void setupCard() {
+        Log.d(TAG, "setupCard");
+        Log.d(TAG, "faceCards length: " + faceCards.size());
         mCards = new ArrayList<View>();
         int counter = 0;
         for(int i=0; i<faceCards.size()/4; i++){
             FaceCard[] fourCards = new FaceCard[4];
+            Bitmap[] images = new Bitmap[4];
             for(int j=0; j<4; j++){
                 //add facecards
                 fourCards[j] = faceCards.get(counter);
-                counter++;
+                images[j] = faceCardImages.get(counter);
                 Log.d("facecard", counter + "");
+                counter++;
             }
-            addCards(fourCards);
+            addCards(fourCards, images);
         }
         if(faceCards.size()%4 != 0) {
             FaceCard[] fourCards = new FaceCard[4];
+            Bitmap[] images = new Bitmap[4];
             for (int i = 0; i < 4; i++) {
                 if (i < faceCards.size() % 4) {
                     //add facecards
                     fourCards[i] = faceCards.get(counter);
+                    images[i] = faceCardImages.get(counter);
                 }else{
-                    //TODO
                     //add empty cards
                     fourCards[i] = new FaceCard("","","","","");
+                    Bitmap.Config conf = Bitmap.Config.ARGB_8888;
+                    images[i] = Bitmap.createBitmap(100, 100, conf);
                 }
                 Log.d("facecard", counter + "");
                 counter++;
             }
-            addCards(fourCards);
+            addCards(fourCards, images);
         }
 
     }
 
     @Override
-    public void addCards(FaceCard[] fourCards){
+    public void addCards(FaceCard[] fourCards, Bitmap[] images){
+        Log.d(TAG, "addCards");
+
         CardBuilder cb = new CardBuilder(this, CardBuilder.Layout.EMBED_INSIDE)
                 .setEmbeddedLayout(R.layout.grid_four_views);
         View view = cb.getView();
 
         //four card
         ImageView four_img_1 = (ImageView) view.findViewById(R.id.four_image_1);
-        four_img_1.setImageBitmap(fourCards[0].getProfilePicture());
+        four_img_1.setImageBitmap(images[0]);
         TextView four_name_1 = (TextView) view.findViewById(R.id.four_name_1);
         four_name_1.setText(fourCards[0].getName());
         TextView four_description_1 = (TextView) view.findViewById(R.id.four_description_1);
@@ -108,7 +121,7 @@ public class FourCardsActivity extends BaseActivity {
         four_note_1.setText(fourCards[0].getTag());
 
         ImageView four_img_2 = (ImageView) view.findViewById(R.id.four_image_2);
-        four_img_2.setImageBitmap(fourCards[1].getProfilePicture());
+        four_img_2.setImageBitmap(images[1]);
         TextView four_name_2 = (TextView) view.findViewById(R.id.four_name_2);
         four_name_2.setText(fourCards[1].getName());
         TextView four_description_2 = (TextView) view.findViewById(R.id.four_description_2);
@@ -117,7 +130,7 @@ public class FourCardsActivity extends BaseActivity {
         four_note_2.setText(fourCards[1].getTag());
 
         ImageView four_img_3 = (ImageView) view.findViewById(R.id.four_image_3);
-        four_img_3.setImageBitmap(fourCards[2].getProfilePicture());
+        four_img_3.setImageBitmap(images[2]);
         TextView four_name_3 = (TextView) view.findViewById(R.id.four_name_3);
         four_name_3.setText(fourCards[2].getName());
         TextView four_description_3 = (TextView) view.findViewById(R.id.four_description_3);
@@ -126,7 +139,7 @@ public class FourCardsActivity extends BaseActivity {
         four_note_3.setText(fourCards[2].getTag());
 
         ImageView four_img_4 = (ImageView) view.findViewById(R.id.four_image_4);
-        four_img_4.setImageBitmap(fourCards[3].getProfilePicture());
+        four_img_4.setImageBitmap(images[3]);
         TextView four_name_4 = (TextView) view.findViewById(R.id.four_name_4);
         four_name_4.setText(fourCards[3].getName());
         TextView four_description_4 = (TextView) view.findViewById(R.id.four_description_4);
@@ -145,13 +158,13 @@ public class FourCardsActivity extends BaseActivity {
             public boolean onGesture(Gesture gesture) {
                 if (gesture == Gesture.TAP) {
                     // do something on
-                    Log.d("test", "click");
-                    AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-                    am.playSoundEffect(Sounds.TAP);
-                    //finish();
-                    Intent intent = new Intent(getApplicationContext(), EightCardsActivity.class);
-                    startActivity(intent);
-
+                    if(faceCards.size()>0) {
+                        AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+                        am.playSoundEffect(Sounds.TAP);
+                        //finish();
+                        Intent intent = new Intent(getApplicationContext(), EightCardsActivity.class);
+                        startActivity(intent);
+                    }
                     return true;
                 } else if (gesture == Gesture.TWO_TAP) {
                     // do something on two finger tap

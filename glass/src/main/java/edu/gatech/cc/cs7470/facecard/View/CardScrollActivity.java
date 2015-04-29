@@ -3,6 +3,7 @@ package edu.gatech.cc.cs7470.facecard.View;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.media.AudioManager;
 import android.os.Bundle;
@@ -40,10 +41,10 @@ public class CardScrollActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
-
         setupCard();
-        Log.d(TAG, mCards.toString());
+
         mCardScrollView = new CardScrollView(this);
         mAdapter = new ExampleCardScrollAdapter();
         mCardScrollView.setAdapter(mAdapter);
@@ -56,31 +57,33 @@ public class CardScrollActivity extends BaseActivity {
 
     @Override
     public void setupCard() {
+        Log.d(TAG, "setupCard");
+        Log.d(TAG, "faceCards length: " + faceCards.size());
         mCards = new ArrayList<CardBuilder>();
         mCards.add(new CardBuilder(this, CardBuilder.Layout.TEXT)
                 .setText("Version1.1 @FaceCard")
                 .setFootnote("Swiping Cards"));
 
-        addCards(faceCards.toArray(new FaceCard[faceCards.size()]));
+        addCards(faceCards.toArray(new FaceCard[faceCards.size()]), faceCardImages.toArray(new Bitmap[faceCardImages.size()]));
 
     }
 
     @Override
-    public void addCards(FaceCard[] faceCards) {
+    public void addCards(FaceCard[] faceCards, Bitmap[] images) {
+        Log.d(TAG, "addCards");
 
-        for(FaceCard fc : faceCards){
+        for(int i=0; i<faceCards.length; i++){
             mCards.add(new CardBuilder(this, CardBuilder.Layout.AUTHOR)
-                    .setIcon(fc.getProfilePicture())
-                    .setText(fc.getName())
-                    .setFootnote(fc.getTag()));
+                    .setIcon(images[i])
+                    .setText(faceCards[i].getName())
+                    .setFootnote(faceCards[i].getTag()));
         }
-
-//        mCards.add(new CardBuilder(this, CardBuilder.Layout.AUTHOR)
-//                .setText(faceCard.getTag())
-//                .setIcon(faceCard.getProfilePicture())
-//                .setHeading(faceCard.getName())
-//                .setSubheading(faceCard.getAccountId())
-//                .setTimestamp("just now"));
+//        for(FaceCard fc : faceCards){
+//            mCards.add(new CardBuilder(this, CardBuilder.Layout.AUTHOR)
+//                    .setIcon(images.)
+//                    .setText(fc.getName())
+//                    .setFootnote(fc.getTag()));
+//        }
 
     }
 
@@ -88,10 +91,12 @@ public class CardScrollActivity extends BaseActivity {
         mCardScrollView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-                am.playSoundEffect(Sounds.TAP);
-                Intent intent = new Intent(getApplicationContext(), FourCardsActivity.class);
-                startActivity(intent);
+                if(faceCards.size()>0) {
+                    AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+                    am.playSoundEffect(Sounds.TAP);
+                    Intent intent = new Intent(getApplicationContext(), FourCardsActivity.class);
+                    startActivity(intent);
+                }
             }
         });
     }
