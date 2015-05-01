@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="com.google.android.glass.permission.DEVELOPMENT" />
 
     <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
 
@@ -13,33 +14,25 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
-        <service
-            android:name="edu.gatech.cc.cs7470.facecard.FaceCardMainService"
-            android:icon="@drawable/ic_glass_logo"
-            android:label="@string/title_activity_face_card_main_service" >
-            <intent-filter>
-                <action android:name="com.google.android.glass.action.VOICE_TRIGGER" />
-            </intent-filter>
-
-            <meta-data
-                android:name="com.google.android.glass.VoiceTrigger"
-                android:resource="@xml/voice_trigger" />
-        </service>
 
         <activity
-            android:name=".View.CardScrollActivity"
+            android:name="edu.gatech.cc.cs7470.facecard.View.CardScrollActivity"
             android:theme="@style/MenuTheme">
             <intent-filter>
+                <action android:name="com.google.android.glass.action.VOICE_TRIGGER" />
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <meta-data
+                android:name="com.google.android.glass.VoiceTrigger"
+                android:resource="@xml/voice_trigger" />
         </activity>
         <activity
-            android:name=".View.FourCardsActivity"
+            android:name="edu.gatech.cc.cs7470.facecard.View.FourCardsActivity"
             android:theme="@style/MenuTheme">
         </activity>
         <activity
-            android:name=".View.EightCardsActivity"
+            android:name="edu.gatech.cc.cs7470.facecard.View.EightCardsActivity"
             android:theme="@style/MenuTheme">
         </activity>
     </application>
